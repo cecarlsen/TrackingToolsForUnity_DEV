@@ -4,6 +4,8 @@ A set of tools to make camera and video projector calibration slightly easier in
 
 Using Unity 2020.3.
 
+![CalibrationDance](https://raw.githubusercontent.com/cecarlsen/TrackingToolsForUnity/master/ReadmeImages/ProjectorCameraCalibration.jpg)
+
 
 ## TrackingTools
 This package depends on [OpenCV for Unity](https://assetstore.unity.com/packages/tools/integration/opencv-for-unity-21088) (sold on the Asset Store) - so for anything to work you will need to buy it and include it in your project. The following components (MonoBehaviours) are available:
@@ -38,7 +40,7 @@ Find extrinsics (physical position and rotation) of a camera relative to special
 Loads extrinsics from json file located in the StreamingAssets folder and applies properties (position and rotation) to a "anchor" transform. The transformation can be inversed, so you can switch between the marker and the camera/projector being fixed.
 
 **ProjectorFromCameraExtrinsicsEstimator**  
-Find the extrinsics of a video projector (indirectly also finding the intrinsics) using a specially designed calibration board.
+Find the extrinsics of a video projector (indirectly also finding the intrinsics) using a specially designed calibration board. [Twitter post](https://twitter.com/cecarlsen/status/1265567632591331328).
 
 - Print one of the specially designed "ProjectorFromCameraExtrinsics" boards found in *TrackingTools/CalibrationBoards/*.
   - The PDF only represents the right half the calibration board. The left half is supposed to be 50% grey, for video projecting a dot pattern. It's recommended to use a coloured sheet of paper instead of printing grey to avoid gloss.
