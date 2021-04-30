@@ -10,10 +10,10 @@ Using Unity 2020.3.
 ## TrackingTools
 This package depends on [OpenCV for Unity](https://assetstore.unity.com/packages/tools/integration/opencv-for-unity-21088) (sold on the Asset Store) - so for anything to work you will need to buy it and include it in your project. The following components (MonoBehaviours) are available:
 
-##### WebCameraTextureProvider
+#### WebCameraTextureProvider
 Creates and forwards a Unity WebCamTexture.
 
-##### CameraIntrinsicsEstimator  
+#### CameraIntrinsicsEstimator  
 Finds the intrinsics (internal properties) of a camera using a physical calibration board and stores it in a json file at *StreamingAssets/TrackingTools/Intrinsics/FILE_NAME.json*.
 
 - Use a calibration board that corresponds to the resolution of your camera. Find boards at *TrackingTools/CalibrationBoards/*. See more about printing further down.
@@ -23,23 +23,23 @@ Finds the intrinsics (internal properties) of a camera using a physical calibrat
   - Avoid movement to reduce motion blur. At best, mount both camera and board, repositioning the board for each sample.
   - Avoid orthogonal shots. it makes the calibration more prone to noise. Instead, always to use a tilt of 15–30° between target normal and camera axis.
 
-##### CameraIntrinsicsLoader
+#### CameraIntrinsicsLoader
 Loads intrinsics from json file located in the StreamingAssets folder and applies properties to a Unity camera (with the PhysicalCamera option enabled).
 
-##### CameraFromChessboardExtrinsicsEstimator
+#### CameraFromChessboardExtrinsicsEstimator
 Find extrinsics (physical position and rotation) of a camera relative to calibration board and store it in a json file at *StreamingAssets/TrackingTools/Extrinsics/FILE_NAME.json*. Do use this, you first need to find the intrinsics of the camera (CameraIntrinsicsEstimator).
 
-##### CameraFromCircleAnchorExtrinsicsEstimator
+#### CameraFromCircleAnchorExtrinsicsEstimator
 Find extrinsics (physical position and rotation) of a camera relative to specially designed marker and store it in a json file at *StreamingAssets/TrackingTools/Extrinsics/FILE_NAME.json*. The marker is consists of four points on a circle and one point in the middle. Using a piece of thread/string and tape, and a ruler, you can easily create this marker at varies scales on the go.
 
 - Make sure the marker is in the camera view.
 - Open and run the scene *TrackingTools/Examples/05 CameraFromCircleAnchorExtrinsicsEstimator*.
 - Point and click the five marker points as precisely as possible.
 
-##### ExtrinsicsLoader
+#### ExtrinsicsLoader
 Loads extrinsics from json file located in the StreamingAssets folder and applies properties (position and rotation) to a "anchor" transform. The transformation can be inversed, so you can switch between the marker and the camera/projector being fixed.
 
-##### ProjectorFromCameraExtrinsicsEstimator
+#### ProjectorFromCameraExtrinsicsEstimator
 Find the extrinsics of a video projector (indirectly also finding the intrinsics) using a specially designed calibration board. [Twitter post](https://twitter.com/cecarlsen/status/1265567632591331328).
 
 - Print one of the specially designed "ProjectorFromCameraExtrinsics" boards found in *TrackingTools/CalibrationBoards/*.
@@ -53,19 +53,19 @@ Find the extrinsics of a video projector (indirectly also finding the intrinsics
 ## TrackingTools.KinectAzure
 Depends on the above and [Azure Kinect Examples for Unity](https://assetstore.unity.com/packages/tools/integration/azure-kinect-examples-for-unity-149700) (sold on the Unity Asset Store).
 
-##### WebCameraTextureProvider  
+#### WebCameraTextureProvider  
 Creates and forwards a IR and/or colour RenderTextures from the Kinect Azure.
 
 
 ## Additional notes
 
-##### Printing calibration boards
+#### Printing calibration boards
 - Print and spray mount on foam or alu-sandwich (aluminum composite panels ACP) boards. Avoid glue bubbles. Keep absolutely flat.
 - Use matte paper. Avoid gloss.
 - If your camera sees infrared (IR) only, then print the board using [a laser printer instead of inkjet](https://answers.opencv.org/question/228413/printer-ink-not-black-in-ir/#229238) to gain higher contrast.
 - Set up bright diffuse room lighting and make sure the board is lit evenly.
 
-##### Designing your own caibration board
+#### Designing your own caibration board
 - Design for OpenCV [findChessboardCorersSB()](https://docs.opencv.org/master/d9/d0c/group__calib3d.html#gadc5bcb05cb21cf1e50963df26986d7c9). It should produce more accurate results than the older findChessboardCorners().
 - Avoid rotational symmetry by keeping your rows and columns asymmetrical. If  you rotate the board 180 degrees, it should NOT look the same.
 - Aim for a tile size of 50 pixels in the image domain. For a 1080p image: floor( 1080 / 50 ) = 21 vertical tiles. However findChessboardCorersSB needs space for rounded tiles, so 21 - 2 = 19 vertical tiles.
@@ -80,9 +80,6 @@ This work could not have been achieved without much inspiration from examples po
 - [Elliot Woods](http://elliotwoods.info/) and [Kyle McDonald](https://kylemcdonald.net/) did a projector and camera calibration [workshop](http://artandcode.com/3d/workshops/4a-calibrating-projectors-and-cameras/) in 2011.
 - Kyle McDonald published [ofxCv](https://github.com/kylemcdonald/ofxCv) computer vision tools for [openFrameworks](https://openframeworks.cc/) (MIT license). [Calibration.cpp](https://github.com/kylemcdonald/ofxCv/blob/master/libs/ofxCv/src/Calibration.cpp) has been an important sources of learning.
 - [Cassinelli Alvaro](https://www.alvarocassinelli.com/) improved on the solution and posted [a video](https://www.youtube.com/watch?v=pCq7u2TvlxU) with a nice explanation in the description.
-
-
-
 
 
 ### Author
