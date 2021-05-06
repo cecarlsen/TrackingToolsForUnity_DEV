@@ -178,7 +178,7 @@ namespace TrackingTools
 			}
 
 			// Load files.
-			if( Intrinsics.TryLoadFromFile( _intrinsicsFileName, out _intrinsics ) ) {
+			if( !Intrinsics.TryLoadFromFile( _intrinsicsFileName, out _intrinsics ) ) {
 				enabled = false;
 				return;
 			}
