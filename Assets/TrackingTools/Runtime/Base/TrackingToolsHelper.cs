@@ -250,19 +250,19 @@ namespace TrackingTools
 		}
 
 
-		/*
-		public static Vector3 TranslationMatVectorToVector3( Mat translationVector )
+		
+		public static Vector3 TranslationMatVectorToVector3( Mat translationVectorMat )
 		{
-			return - ReadVector3( translationVector );
+			return - translationVectorMat.ReadVector3();
 		}
 
 
-		public static Quaternion RotationMatVectorToQuaternion( Mat rotationVector ) // Could use OpenCVs Rodrigues for this as well.
+		public static Quaternion RotationMatVectorToQuaternion( Mat rotationVectorMat ) // Could use OpenCVs Rodrigues for this as well.
 		{
-			Vector3 rot = ReadVector3( rotationVector );
-			return Quaternion.AngleAxis( rot.magnitude * Mathf.Rad2Deg, - rot );
+			Vector3 rotationVector = rotationVectorMat.ReadVector3();
+			return Quaternion.AngleAxis( rotationVector.magnitude * Mathf.Rad2Deg, -rotationVector );
 		}
-		*/
+		
 
 
 		public static void ApplyPose( Mat rotationVectorMat, Mat translationVectorMat, Transform transform, bool inverse = false )

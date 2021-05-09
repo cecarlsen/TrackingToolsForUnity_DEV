@@ -26,8 +26,9 @@ namespace TrackingTools
 
 		[Header("Output")]
 		[SerializeField] Transform _targetCameraTransform = null;
-		//[SerializeField] UnityEvent<float> _fieldOfViewEvent = null;
-		
+		[SerializeField] string _extrinsicsFileName = "DefaultCameraFromCircleAnchor";
+		//[SerializeField] UnityEvent<float> _fieldOfViewEvent = null; 
+
 		[Header("UI")]
 		[SerializeField] Canvas _canvas = null;
 		[SerializeField] KeyCode _interactibaleHotKey = KeyCode.Alpha1;
@@ -68,6 +69,7 @@ namespace TrackingTools
 		Material _uiMaterial;
 
 		Intrinsics _intrinsics;
+		Extrinsics _extrinsics;
 		
 		const int pointCount = 5;
 		
@@ -176,6 +178,8 @@ namespace TrackingTools
 				_anchorPointsImage[p] = new Point();
 				_anchorPointsWorld[p] = new Point3();
 			}
+
+			_extrinsics = new Extrinsics();
 
 			// Load files.
 			if( !Intrinsics.TryLoadFromFile( _intrinsicsFileName, out _intrinsics ) ) {
@@ -357,20 +361,13 @@ namespace TrackingTools
 			bool success = Calib3d.solvePnP( _anchorPointsWorldMat, _anchorPointsImageMat, _cameraMatrix, _noDistCoeffs, _rVec, _tVec );
 			if( !success ) return;
 
-			// Convert.
-			bool inverse = true;
-			TrackingToolsHelper.ApplyPose( _rVec, _tVec, _targetCameraTransform, inverse );
-			/*
-			Vector3 translation = TrackingToolsHelper.TranslationMatVectorToVector3( _tVec  );
-			Quaternion rotation = TrackingToolsHelper.RotationMatVectorToQuaternion( _rVec );
-			translation = rotation * translation;
-			
-			// Apply.
-			_targetCameraTransform.SetPositionAndRotation( translation, rotation );
-			*/
+			// Convert and apply.
+			_extrinsics.UpdateFromOpenCvSolvePnp( _rVec, _tVec );
+			_extrinsics.ApplyToTransform( _targetCameraTransform, null, inverse: false );
 
 			// Save.
 			SaveCircleAnchorPoints();
+			SaveExtrinsics();
 		}
 	
 
@@ -405,6 +402,14 @@ namespace TrackingTools
 			File.WriteAllText( filePath, JsonUtility.ToJson( data ) );
 
 			//Debug.Log( logPrepend + "Saved anchor points to file.\n" + filePath );
+		}
+
+
+		void SaveExtrinsics()
+		{
+			_extrinsics.SaveToFile( _extrinsicsFileName );
+
+			Debug.Log( logPrepend + "Saved extrinsics to file.\n" + _extrinsicsFileName );
 		}
 
 
