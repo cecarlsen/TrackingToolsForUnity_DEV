@@ -1,5 +1,5 @@
 ﻿/*
-	Copyright © Carl Emil Carlsen 2020
+	Copyright © Carl Emil Carlsen 2020-2021
 	http://cec.dk
 
 	Intriniscs values stored independent from resolution.
@@ -21,11 +21,17 @@ namespace TrackingTools
 		// We store resolution independent values in viewport space (zero at bottom-left).
 		[SerializeField] double cx, cy;				// Principal point that is usually at the image center.
 		[SerializeField] double fx, fy;				// Focal lengths.
-		[SerializeField] double[] distortionCoeffs;	// Radial and tangential distortion coefficients.
+		[SerializeField] double[] distortionCoeffs;	// K1, K2, K3, P1 & P2. Radial and tangential distortion coefficients.
 		[SerializeField] double aspect;
 		[SerializeField] double rmsError;
 
 		static readonly string logPrepend = "<b>[" + nameof( Intrinsics ) + "]</b> ";
+
+		public double Cx => cx;
+		public double Cy => cy;
+		public double Fx => fx;
+		public double Fy => fy;
+		public double Aspect => aspect;
 
 
 		public void ApplyToCamera( Camera cam )
@@ -44,6 +50,61 @@ namespace TrackingTools
 			//if( flippedLensShiftY ) lensShift.y *= -1;
 			cam.lensShift = lensShift;
 			cam.gateFit = Camera.GateFitMode.None;
+		}
+
+
+		public Texture2D CreateUndistortLutTexture( int width, int height )
+		{
+			Texture2D texture = new Texture2D( width, height, TextureFormat.RGFloat, false, linear: true );
+			texture.name = "LensUndistortionLut";
+
+			Vector2[] pixelData = new Vector2[ width * height ];
+			Vector2 uv = new Vector2();
+			for( int ny = 0; ny < height; ny++ ) {
+				uv.y = ny / (float) height;
+				for( int nx = 0; nx < width; nx++ ) {
+					uv.x = nx / (float) width;
+					pixelData[ ny * width + nx ] = Distort( uv );
+				}
+			}
+			texture.SetPixelData( pixelData, 0 );
+			texture.Apply();
+
+			return texture;
+		}
+
+
+		// http://alumni.media.mit.edu/~sbeck/results/Distortion/distortion.html
+		Vector2 Distort( Vector2 uv )
+		{
+			double k1 = distortionCoeffs[ 0 ];
+			double k2 = distortionCoeffs[ 1 ];
+			double k3 = distortionCoeffs[ 2 ];
+			//double p1 = distortionCoeffs[ 3 ] / 720f; // are these normalized?
+			//double p2 = distortionCoeffs[ 4 ] / 1280f;
+
+			// To center.
+			double x = ( uv.x - cx ) / fx / aspect;
+			double y = ( uv.y - cy ) / fy;
+
+			double r2 = x*x + y*y;
+
+			double xd = x;
+			double yd = y;
+
+			// Radial distortion
+			xd += x * ( k1*r2 + k2*r2*r2 + k3*r2*r2*r2 );
+			yd += y * ( k1*r2 + k2*r2*r2 + k3*r2*r2*r2 );
+
+			// Tangential distortion
+			//xd += p1 * (r2 + 2*x*x) + 2*p2*x*y;
+			//yd += p2 * (r2 + 2*y*y) + 2*p1*x*y;
+
+			// Back to 0,0.
+			xd = xd * fx * aspect + cx;
+			yd = yd * fy + cy;
+
+			return new Vector2( (float) xd, (float) yd );
 		}
 
 
@@ -75,6 +136,19 @@ namespace TrackingTools
 
 			intrinsics = JsonUtility.FromJson<Intrinsics>( File.ReadAllText( filePath ) );
 			return true;
+		}
+
+
+		public void Update( double cx, double cy, double fx, double fy, double[] distortionCoeffs, double aspect, double rmsError )
+		{
+			this.cx = cx;
+			this.cy = cy;
+			this.fx = fx;
+			this.fy = fy;
+			if( this.distortionCoeffs == null || this.distortionCoeffs.Length != distortionCoeffs.Length ) this.distortionCoeffs = new double[ distortionCoeffs.Length  ];
+			System.Array.Copy( distortionCoeffs, 0, this.distortionCoeffs, 0, distortionCoeffs.Length );
+			this.aspect = aspect;
+			this.rmsError = rmsError;
 		}
 
 
@@ -125,9 +199,7 @@ namespace TrackingTools
 			sensorMat.WriteValue( cx * width, 0, 2 );
 			sensorMat.WriteValue( cy * height, 1, 2 );
 
-			for( int i = 0; i < distortionCoeffs.Length; i++ ) {
-				distCoeffsMat.WriteValue( distortionCoeffs[ i ], i );
-			}
+			for( int i = 0; i < distortionCoeffs.Length; i++ ) distCoeffsMat.WriteValue( distortionCoeffs[ i ], i );
 
 			return true;
 		}

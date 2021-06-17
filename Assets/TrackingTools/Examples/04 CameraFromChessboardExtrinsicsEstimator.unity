@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.12731749, g: 0.13414757, b: 0.1210787, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -701,7 +701,7 @@ MonoBehaviour:
   _flipCameraTexture: 0
   _chessPatternSize: {x: 12, y: 9}
   _chessTileSize: 25
-  _intrinsicsFileName: RazerBladeIntegrated_1280x720_E-0,25
+  _intrinsicsFileName: RazerBladeIntegrated_1280x720_E-0,29
   _processedCameraImage: {fileID: 1516999709}
   _tranformPattern: 0
   _testPrecisionDotsEnabled: 0
@@ -918,7 +918,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a3cb19cb3ce5db4387ca06bebeabea9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _requestedDeviceIndex: 0
+  _requestedDeviceIndex: 1
   _requestedWidth: 1280
   _requestedHeight: 720
   _requestedFrameRate: 30

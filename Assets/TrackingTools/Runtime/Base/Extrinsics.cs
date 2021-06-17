@@ -21,7 +21,7 @@ namespace TrackingTools
 		static readonly string logPrepend = "<b>[" + nameof( Extrinsics ) + "]</b> ";
 
 
-		public void ApplyToTransform( Transform transform, Transform achorTransform = null, bool inverse = false, bool isMirrored = false )
+		public void ApplyToTransform( Transform transform, Transform achorTransform = null, bool inverse = false, bool isMirrored = false, Space space = Space.World )
 		{
 			Quaternion r = rotation;
 			Vector3 t = translation;
@@ -34,7 +34,12 @@ namespace TrackingTools
 				r = achorTransform.rotation * r;
 				t = achorTransform.position + achorTransform.rotation * t;
 			}
-			transform.SetPositionAndRotation( t, r );
+			if( space == Space.World ) {
+				transform.SetPositionAndRotation( t, r );
+			} else {
+				transform.localPosition = t;
+				transform.localRotation = r;
+			}
 		}
 
 

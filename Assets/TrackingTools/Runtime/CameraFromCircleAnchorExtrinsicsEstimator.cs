@@ -281,6 +281,7 @@ namespace TrackingTools
 
 			_intrinsics.ToOpenCV( ref _cameraMatrix, ref _distCoeffs, w, h );
 
+
 			// UI.
 			_rawImageUI.texture = _undistortedCameraTexture;
 			_aspectFitterUI.aspectRatio = w / (float) h;

@@ -1,3 +1,10 @@
+##0.1.1 (2021/06/03)
+
+**CHANGES**
+
+ - Added CameraLensUndistorterGpu (only supporting radial distortion).
+
+
 ##0.1.0 (2021/04/21)
 
 **CHANGES**

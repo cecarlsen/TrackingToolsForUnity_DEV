@@ -15,6 +15,7 @@ namespace TrackingTools
 		[SerializeField] bool _isMirrored = false;
 		[SerializeField] bool _imbedInAnchorTransform = false;
 		[SerializeField] bool _updateContinously = false;
+		[SerializeField] Space _space = Space.World;
 
 		Extrinsics _extrinsics;
 
@@ -26,15 +27,15 @@ namespace TrackingTools
 				return;
 			}
 
-			_extrinsics.ApplyToTransform( transform, _anchorTransform, _inverse, _isMirrored );
-
 			if( _anchorTransform && _imbedInAnchorTransform ) transform.SetParent( _anchorTransform );
+
+			_extrinsics.ApplyToTransform( transform, _anchorTransform, _inverse, _isMirrored, _space );
 		}
 
 
 		void Update()
 		{
-			if( _updateContinously ) _extrinsics.ApplyToTransform( transform, _anchorTransform, _inverse, _isMirrored );
+			if( _updateContinously ) _extrinsics.ApplyToTransform( transform, _anchorTransform, _inverse, _isMirrored, _space );
 		}
 	}
 }
