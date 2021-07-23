@@ -1,5 +1,5 @@
 ﻿/*
-	Copyright © Carl Emil Carlsen 2020
+	Copyright © Carl Emil Carlsen 2020-2021
 	http://cec.dk
 */
 
@@ -15,11 +15,8 @@ namespace TrackingTools
 		SerializedProperty _requestedWidthProp;
 		SerializedProperty _requestedHeightProp;
 		SerializedProperty _requestedFrameRateProp;
-		SerializedProperty _undistortionEnabledProp;
-		SerializedProperty _intrinsicsFileNameProp;
 		SerializedProperty _logStatusProp;
 		SerializedProperty _webCamTextureEventProp;
-		SerializedProperty _undistortedWebCamTextureEventProp;
 		SerializedProperty _webCamAspectEvent;
 
 		string[] _displayOptions;
@@ -34,11 +31,8 @@ namespace TrackingTools
 			_requestedWidthProp = serializedObject.FindProperty( "_requestedWidth" );
 			_requestedHeightProp = serializedObject.FindProperty( "_requestedHeight" );
 			_requestedFrameRateProp = serializedObject.FindProperty( "_requestedFrameRate" );
-			_undistortionEnabledProp = serializedObject.FindProperty( "_undistortionEnabled" );
-			_intrinsicsFileNameProp = serializedObject.FindProperty( "_intrinsicsFileName" );
 			_logStatusProp = serializedObject.FindProperty( "_logStatus" );
 			_webCamTextureEventProp = serializedObject.FindProperty( "_webCamTextureEvent" );
-			_undistortedWebCamTextureEventProp = serializedObject.FindProperty( "_undistortedWebCamTextureEvent" );
 			_webCamAspectEvent = serializedObject.FindProperty( "_webCamAspectEvent" );
 		}
 
@@ -77,13 +71,9 @@ namespace TrackingTools
 			EditorGUILayout.PropertyField( _requestedHeightProp );
 			EditorGUILayout.PropertyField( _requestedFrameRateProp );
 
-			EditorGUILayout.PropertyField( _undistortionEnabledProp );
-			if( _undistortionEnabledProp.boolValue ) EditorGUILayout.PropertyField( _intrinsicsFileNameProp );
-
 			EditorGUILayout.PropertyField( _logStatusProp );
 
 			EditorGUILayout.PropertyField( _webCamTextureEventProp );
-			if( _undistortionEnabledProp.boolValue ) EditorGUILayout.PropertyField( _undistortedWebCamTextureEventProp );
 			EditorGUILayout.PropertyField( _webCamAspectEvent );
 
 			serializedObject.ApplyModifiedProperties();

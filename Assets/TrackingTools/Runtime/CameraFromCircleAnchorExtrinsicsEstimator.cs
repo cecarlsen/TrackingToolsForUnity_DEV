@@ -1,5 +1,5 @@
 ﻿/*
-	Copyright © Carl Emil Carlsen 2018-2020
+	Copyright © Carl Emil Carlsen 2018-2021
 	http://cec.dk
 */
 
@@ -114,6 +114,16 @@ namespace TrackingTools
 			}
 		}
 
+		public string intrinsicsFileName {
+			get { return _intrinsicsFileName; }
+			set { _intrinsicsFileName = value; }
+		}
+
+		public string extrinsicsFileName {
+			get { return _extrinsicsFileName; }
+			set { _extrinsicsFileName = value; }
+		}
+
 
 		void Awake()
 		{
@@ -181,15 +191,20 @@ namespace TrackingTools
 
 			_extrinsics = new Extrinsics();
 
+			
+			// Update variables.
+			if( !Application.isEditor ) OnValidate();
+		}
+
+
+		void Start()
+		{
 			// Load files.
 			if( !Intrinsics.TryLoadFromFile( _intrinsicsFileName, out _intrinsics ) ) {
 				enabled = false;
 				return;
 			}
 			LoadCircleAnchorPoints();
-			
-			// Update variables.
-			if( !Application.isEditor ) OnValidate();
 		}
 
 

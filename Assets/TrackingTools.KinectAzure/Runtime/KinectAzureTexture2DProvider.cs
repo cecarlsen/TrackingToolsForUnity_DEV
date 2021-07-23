@@ -11,9 +11,13 @@ using UnityEngine.Experimental.Rendering;
 
 public class KinectAzureTexture2DProvider : MonoBehaviour
 {
-	[SerializeField] int _sensorId = 0;
+	[SerializeField] Kinect4AzureInterface _kinectInterface = null;
+
+	[Header("Output")]
 	[SerializeField] UnityEvent<Texture2D> _irTexture2DEvent = null;
 	[SerializeField] UnityEvent<Texture2D> _colorTexture2DEvent = null;
+	[SerializeField] UnityEvent<float> _irTextureAspectEvent = null;
+	[SerializeField] UnityEvent<float> _colorTextureAspectEvent = null;
 
 	Texture2D _irTexture;
 	byte[] _rawImageDataBytes;
@@ -24,20 +28,23 @@ public class KinectAzureTexture2DProvider : MonoBehaviour
 
 	void Update()
 	{
+		if( !_kinectInterface ) return;
+
 		KinectManager kinectManager = KinectManager.Instance;
-		if( kinectManager && kinectManager.IsInitialized() )
+		if( kinectManager && kinectManager.IsInitialized() && kinectManager.IsDepthSensorsStarted() )
 		{
-			KinectInterop.SensorData sensorData = kinectManager.GetSensorData( _sensorId );
+			KinectInterop.SensorData sensorData = kinectManager.GetSensorData( _kinectInterface.deviceIndex );
 
 			// Azure Kinect Examples unpacks IR on the GPU into a RenderTexture. We need a Texture2D.
 			if( _irTexture2DEvent != null ) ConvertAndOutputIRTexture2D( kinectManager, sensorData );
 
 			// The color texture is already a Texture2D, so we just output it.
 			if( _colorTexture2DEvent != null && sensorData.lastColorFrameTime != _lastColorFrameTime ) {
-				Texture colorTexture = kinectManager.GetColorImageTex( _sensorId ) as Texture;
+				Texture colorTexture = kinectManager.GetColorImageTex( _kinectInterface.deviceIndex );
 				colorTexture.wrapMode = TextureWrapMode.Repeat;
 				if( colorTexture ){
 					if( string.IsNullOrEmpty( colorTexture.name ) ) colorTexture.name = "KinectColor";
+					_colorTextureAspectEvent.Invoke( colorTexture.width / (float) colorTexture.height );
 					_colorTexture2DEvent.Invoke( colorTexture as Texture2D );
 				}
 				_lastColorFrameTime = sensorData.lastColorFrameTime;
@@ -58,10 +65,12 @@ public class KinectAzureTexture2DProvider : MonoBehaviour
 				_irTexture = new Texture2D( width, height, GraphicsFormat.R16_UNorm, TextureCreationFlags.None );
 				_irTexture.name = "KinectIR";
 				_rawImageDataBytes = new byte[ pixelCount * 2 ];
+
+				_irTextureAspectEvent.Invoke( width / (float) height );
 			}
 
 			// Get raw image data.
-			ushort[] rawImageData = kinectManager.GetRawInfraredMap( _sensorId );
+			ushort[] rawImageData = kinectManager.GetRawInfraredMap( _kinectInterface.deviceIndex );
 
 			// ushort[] to byte[].
 			// https://stackoverflow.com/questions/37213819/convert-ushort-into-byte-and-back

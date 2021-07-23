@@ -11,7 +11,10 @@
 
 using System.IO;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 using OpenCVForUnity.CoreModule;
+using OpenCVForUnity.Calib3dModule;
+using OpenCVForUnity.UnityUtils;
 
 namespace TrackingTools
 {
@@ -19,9 +22,12 @@ namespace TrackingTools
 	public class Intrinsics
 	{
 		// We store resolution independent values in viewport space (zero at bottom-left).
-		[SerializeField] double cx, cy;				// Principal point that is usually at the image center.
-		[SerializeField] double fx, fy;				// Focal lengths.
-		[SerializeField] double[] distortionCoeffs;	// K1, K2, K3, P1 & P2. Radial and tangential distortion coefficients.
+		[SerializeField] double cx, cy;		// Principal point that is usually at the image center.
+		[SerializeField] double fx, fy;		// Focal lengths.
+
+		// Order as provided by Calib3d.calibrateCamera and expected by initUndistortRectifyMap: K1, K2, P1, P2, K3.
+		[SerializeField] double[] distortionCoeffs; 
+
 		[SerializeField] double aspect;
 		[SerializeField] double rmsError;
 
@@ -31,7 +37,23 @@ namespace TrackingTools
 		public double Cy => cy;
 		public double Fx => fx;
 		public double Fy => fy;
+
+		/// <summary>
+		/// Width divided by height.
+		/// </summary>
 		public double Aspect => aspect;
+
+		/// <summary>
+		/// Field of view (vertically) in degrees.
+		/// Note that FOV makes less sense as the principal point offset diviates from 0.5.
+		/// </summary>
+		public double FovVertical => Mathf.Atan2( 0.5f, (float) fy ) * 2 * Mathf.Rad2Deg;
+
+		/// <summary>
+		/// Field of view (horizontally) in degrees.
+		/// Note that FOV makes less sense as the principal point offset diviates from 0.5.
+		/// </summary>
+		public double FovHorizontal => Mathf.Atan2( 0.5f, (float) fx ) * 2 * Mathf.Rad2Deg;
 
 
 		public void ApplyToCamera( Camera cam )
@@ -42,7 +64,7 @@ namespace TrackingTools
 			// Also, about sensor size and focal lengths.
 			// https://answers.opencv.org/question/139166/focal-length-from-calibration-parameters/
 
-			float focalLength = cam.focalLength; // f can be arbitrary, as long as sensor_size is resized to to make ax,ay consistient
+			float focalLength = cam.focalLength; // f can be arbitrary, as long as sensor_size is resized to to make ax, ay consistient.
 			cam.orthographic = false;
 			cam.usePhysicalProperties = true;
 			cam.sensorSize = new Vector2( (float) ( focalLength / fx ), (float) ( focalLength / fy ) );
@@ -53,58 +75,66 @@ namespace TrackingTools
 		}
 
 
-		public Texture2D CreateUndistortLutTexture( int width, int height )
+		public void DrawFrustumGizmo( Vector3 originPosition, Quaternion originRotation, float nearClip, float farClip )
 		{
-			Texture2D texture = new Texture2D( width, height, TextureFormat.RGFloat, false, linear: true );
-			texture.name = "LensUndistortionLut";
+			Gizmos.matrix *= Matrix4x4.TRS( originPosition, originRotation, Vector3.one );
 
-			Vector2[] pixelData = new Vector2[ width * height ];
-			Vector2 uv = new Vector2();
-			for( int ny = 0; ny < height; ny++ ) {
-				uv.y = ny / (float) height;
-				for( int nx = 0; nx < width; nx++ ) {
-					uv.x = nx / (float) width;
-					pixelData[ ny * width + nx ] = Distort( uv );
-				}
-			}
-			texture.SetPixelData( pixelData, 0 );
-			texture.Apply();
+			Vector3 dirSE = new Vector3( ( 0f - (float) cx ) / (float) fx, ( 0f - (float) cy ) / (float) fy, 1 );
+			Vector3 dirNE = new Vector3( ( 0f - (float) cx ) / (float) fx, ( 1f - (float) cy ) / (float) fy, 1 );
+			Vector3 dirNW = new Vector3( ( 1f - (float) cx ) / (float) fx, ( 1f - (float) cy ) / (float) fy, 1 );
+			Vector3 dirSW = new Vector3( ( 1f - (float) cx ) / (float) fx, ( 0f - (float) cy ) / (float) fy, 1 );
 
-			return texture;
+			Vector3 nearSE = dirSE * nearClip;
+			Vector3 farSE = dirSE * farClip;
+			Vector3 nearNE = dirNE * nearClip;
+			Vector3 farNE = dirNE * farClip;
+			Vector3 nearNW = dirNW * nearClip;
+			Vector3 farNW = dirNW * farClip;
+			Vector3 nearSW = dirSW * nearClip;
+			Vector3 farSW = dirSW * farClip;
+
+			Gizmos.DrawLine( nearSE, farSE );
+			Gizmos.DrawLine( nearNE, farNE );
+			Gizmos.DrawLine( nearNW, farNW );
+			Gizmos.DrawLine( nearSW, farSW );
+			Gizmos.DrawLine( nearSE, nearNE );
+			Gizmos.DrawLine( nearNE, nearNW );
+			Gizmos.DrawLine( nearNW, nearSW );
+			Gizmos.DrawLine( nearSW, nearSE );
+			Gizmos.DrawLine( farSE, farNE );
+			Gizmos.DrawLine( farNE, farNW );
+			Gizmos.DrawLine( farNW, farSW );
+			Gizmos.DrawLine( farSW, farSE );
 		}
 
-
-		// http://alumni.media.mit.edu/~sbeck/results/Distortion/distortion.html
-		Vector2 Distort( Vector2 uv )
+		
+		public Texture2D CreateUndistortRectifyTexture( int width, int height )
 		{
-			double k1 = distortionCoeffs[ 0 ];
-			double k2 = distortionCoeffs[ 1 ];
-			double k3 = distortionCoeffs[ 2 ];
-			//double p1 = distortionCoeffs[ 3 ] / 720f; // are these normalized?
-			//double p2 = distortionCoeffs[ 4 ] / 1280f;
+			Mat sensorMat = null;
+			MatOfDouble distMat = null;
+			Mat undistortMap = new Mat();
+			Mat undistortMapUnused = new Mat();
 
-			// To center.
-			double x = ( uv.x - cx ) / fx / aspect;
-			double y = ( uv.y - cy ) / fy;
+			ToOpenCV( ref sensorMat, ref distMat, width, height );
 
-			double r2 = x*x + y*y;
+			// Create undistort map.
+			// SensorMat remains unchanged even through it is passed as newCameraMatrix.
+			// By passing in CV_32FC2 as type, we are requesting both U and V offsets to be stored in map1 (undistortMap).
+			// https://docs.opencv.org/4.5.2/d9/d0c/group__calib3d.html#ga7dfb72c9cf9780a347fbe3d1c47e5d5a
+			Calib3d.initUndistortRectifyMap( sensorMat, distMat, new Mat(), sensorMat, new Size( width, height ), CvType.CV_32FC2, undistortMap, undistortMapUnused );
 
-			double xd = x;
-			double yd = y;
+			Texture2D undistortionTexture = new Texture2D( width, height, GraphicsFormat.R32G32_SFloat, TextureCreationFlags.None );
+			undistortionTexture.name = "UndistortLUT";
+			undistortionTexture.wrapMode = TextureWrapMode.Repeat;
 
-			// Radial distortion
-			xd += x * ( k1*r2 + k2*r2*r2 + k3*r2*r2*r2 );
-			yd += y * ( k1*r2 + k2*r2*r2 + k3*r2*r2*r2 );
+			Utils.fastMatToTexture2D( undistortMap, undistortionTexture );
 
-			// Tangential distortion
-			//xd += p1 * (r2 + 2*x*x) + 2*p2*x*y;
-			//yd += p2 * (r2 + 2*y*y) + 2*p1*x*y;
+			sensorMat.release();
+			distMat.release();
+			undistortMap.release();
+			undistortMapUnused.release();
 
-			// Back to 0,0.
-			xd = xd * fx * aspect + cx;
-			yd = yd * fy + cy;
-
-			return new Vector2( (float) xd, (float) yd );
+			return undistortionTexture;
 		}
 
 
@@ -145,7 +175,7 @@ namespace TrackingTools
 			this.cy = cy;
 			this.fx = fx;
 			this.fy = fy;
-			if( this.distortionCoeffs == null || this.distortionCoeffs.Length != distortionCoeffs.Length ) this.distortionCoeffs = new double[ distortionCoeffs.Length  ];
+			if( this.distortionCoeffs == null || this.distortionCoeffs.Length != distortionCoeffs.Length ) this.distortionCoeffs = new double[ distortionCoeffs.Length ];
 			System.Array.Copy( distortionCoeffs, 0, this.distortionCoeffs, 0, distortionCoeffs.Length );
 			this.aspect = aspect;
 			this.rmsError = rmsError;
@@ -154,7 +184,7 @@ namespace TrackingTools
 
 		public void UpdateFromOpenCV( Mat sensorMat, MatOfDouble distCoeffsMat, int width, int height, float rmsError )
 		{
-			if( distortionCoeffs == null || distCoeffsMat.IsDisposed || distortionCoeffs.Length != distCoeffsMat.total() ){
+			if( distortionCoeffs == null || distortionCoeffs.Length != distCoeffsMat.total() ){
 				distortionCoeffs = new double[ distCoeffsMat.total() ];
 			}
 
@@ -162,12 +192,9 @@ namespace TrackingTools
 			fy = sensorMat.ReadValue( 1, 1 ) / (double) height;
 			cx = sensorMat.ReadValue( 0, 2 ) / (double) width;
 			cy = sensorMat.ReadValue( 1, 2 ) / (double) height;
+			for( int i = 0; i < distortionCoeffs.Length; i++ ) distortionCoeffs[i] = distCoeffsMat.ReadValue( i );
 			aspect = width / (double) height;
 			this.rmsError = rmsError;
-
-			for( int i = 0; i < distortionCoeffs.Length; i++ ) {
-				distortionCoeffs[i] = distCoeffsMat.ReadValue( i );
-			}
 		}
 
 

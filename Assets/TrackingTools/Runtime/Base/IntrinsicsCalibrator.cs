@@ -86,7 +86,9 @@ namespace TrackingTools
 			// This is useful in case of projectors.
 			if( useTextureAspect ) flags |= Calib3d.CALIB_FIX_ASPECT_RATIO;
 
+			// Compute intrinsics.
 			// https://forum.unity.com/threads/released-opencv-for-unity.277080/page-8#post-2348856
+			// https://docs.opencv.org/4.5.2/d9/d0c/group__calib3d.html#ga3207604e4b1a1758aa66acb6ed5aa65d
 			_rmsError = (float) Calib3d.calibrateCamera( _patternRealSamples, _patternImageSamples, _textureSize, /*out*/ _sensorMat, /*out*/ _distortionCoeffsMat, /*out*/ _rotationSamples, /*out*/ _translationSamples, flags );
 
 			//Debug.Log( "New intrinsics matrix\n" + _sensorMat.dump() );

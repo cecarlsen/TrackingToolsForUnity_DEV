@@ -21,17 +21,19 @@ namespace TrackingTools
 		[SerializeField, Tooltip( "Number of inner corners" )] Vector2Int _chessPatternSize = new Vector2Int( 7, 10 );
 		[SerializeField, Tooltip( "Millimeters" )] int _chessTileSize = 15; // Real space (milimeters).
 		[SerializeField] string _intrinsicsFileName = "DefaultCamera";
-		[SerializeField] RawImage _processedCameraImage = null;
 		[SerializeField] bool _tranformPattern = false;
 		[SerializeField] bool _testPrecisionDotsEnabled = false;
 		[SerializeField,Layer] int _testPrecisionDotsLayer = 0;
 		[SerializeField] bool _applyRelative = true;
 		[SerializeField] bool _fastAndImprecise = false;
 
-
+		[Header("Output")]
 		[SerializeField] string _extrinsicsFileName = "DefaultCameraFromChessboard";
 
+		[Header("UI")]
+		[SerializeField] RawImage _processedCameraImage = null;
 		[SerializeField] Camera _mainCamera = null;
+
 
 		Intrinsics _intrinsics;
 		CameraExtrinsicsCalibrator _extrinsicsCalibrator;
@@ -228,6 +230,7 @@ namespace TrackingTools
 			_arTexture.name = "AR Texture";
 
 			// Create undistort map (sensorMat remains unchanged even through it is passed as newCameraMatrix).
+			// https://docs.opencv.org/4.5.2/d9/d0c/group__calib3d.html#ga7dfb72c9cf9780a347fbe3d1c47e5d5a
 			Calib3d.initUndistortRectifyMap( _sensorMat, _distortionCoeffsMat, new Mat(), _sensorMat, new Size( _cameraTexture.width, _cameraTexture.height ), CvType.CV_32FC1, _undistortMap1, _undistortMap2 );
 
 			// Update UI.

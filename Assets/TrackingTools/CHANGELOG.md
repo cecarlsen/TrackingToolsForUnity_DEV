@@ -1,3 +1,10 @@
+##0.1.3 (2021/07/23)
+
+**CHANGES**
+
+ - Included OpenCvKalmanFilter3D.
+
+
 ##0.1.2 (2021/06/29)
 
 **CHANGES**

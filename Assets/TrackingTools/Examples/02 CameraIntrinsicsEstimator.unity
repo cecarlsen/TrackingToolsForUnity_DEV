@@ -163,10 +163,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a3cb19cb3ce5db4387ca06bebeabea9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _requestedDeviceIndex: 1
+  _requestedDeviceIndex: 0
   _requestedWidth: 1280
   _requestedHeight: 720
   _requestedFrameRate: 30
+  _undistortionEnabled: 0
+  _intrinsicsFileName: 
   _logStatus: 1
   _webCamTextureEvent:
     m_PersistentCalls:
@@ -183,6 +185,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  _undistortedWebCamTextureEvent:
+    m_PersistentCalls:
+      m_Calls: []
   _webCamAspectEvent:
     m_PersistentCalls:
       m_Calls: []

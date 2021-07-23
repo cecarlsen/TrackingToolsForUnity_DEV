@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -247,6 +247,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
+  m_PresetInfoIsWorld: 0
 --- !u!223 &420744686
 Canvas:
   m_ObjectHideFlags: 0
@@ -493,6 +494,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
+    m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
@@ -699,10 +701,13 @@ MonoBehaviour:
   _flipCameraTexture: 1
   _chessPatternSize: {x: 5, y: 8}
   _chessTileSize: 40
-  _intrinsicsFileName: KinectAzure_Color_1280_720
+  _intrinsicsFileName: KinectFloor_Color_R720p_000235494012
   _processedCameraImage: {fileID: 1516999709}
   _tranformPattern: 0
+  _testPrecisionDotsEnabled: 0
+  _testPrecisionDotsLayer: 0
   _applyRelative: 1
+  _fastAndImprecise: 0
   _extrinsicsFileName: DefaultCameraFromChessboard
   _mainCamera: {fileID: 499654081}
 --- !u!1 &1516999707
@@ -806,7 +811,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54302df3510f47843ae7d861a9ae44cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sensorId: 0
+  _kinectInterface: {fileID: 1835003807}
   _irTexture2DEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -826,6 +831,12 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  _irTextureAspectEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  _colorTextureAspectEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &1569903599
 Transform:
   m_ObjectHideFlags: 0
@@ -954,90 +965,84 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 6843673401472626457, guid: 070a2db91cf27fd4a85638d4181a0c49,
-        type: 3}
+    - target: {fileID: 6843673401472626457, guid: 070a2db91cf27fd4a85638d4181a0c49, type: 3}
       propertyPath: colorCameraMode
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 6843673402970588149, guid: 070a2db91cf27fd4a85638d4181a0c49,
-        type: 3}
+    - target: {fileID: 6843673402970588149, guid: 070a2db91cf27fd4a85638d4181a0c49, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6843673403391487546, guid: 070a2db91cf27fd4a85638d4181a0c49,
-        type: 3}
+    - target: {fileID: 6843673403391487546, guid: 070a2db91cf27fd4a85638d4181a0c49, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6843673403491521530, guid: 070a2db91cf27fd4a85638d4181a0c49,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6843673403491521530, guid: 070a2db91cf27fd4a85638d4181a0c49,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6843673403491521530, guid: 070a2db91cf27fd4a85638d4181a0c49,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6843673403491521530, guid: 070a2db91cf27fd4a85638d4181a0c49,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6843673403491521530, guid: 070a2db91cf27fd4a85638d4181a0c49,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6843673403491521530, guid: 070a2db91cf27fd4a85638d4181a0c49,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6843673403491521530, guid: 070a2db91cf27fd4a85638d4181a0c49,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6843673403491521530, guid: 070a2db91cf27fd4a85638d4181a0c49,
-        type: 3}
+    - target: {fileID: 6843673403491521530, guid: 070a2db91cf27fd4a85638d4181a0c49, type: 3}
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6843673403491521530, guid: 070a2db91cf27fd4a85638d4181a0c49,
-        type: 3}
+    - target: {fileID: 6843673403491521530, guid: 070a2db91cf27fd4a85638d4181a0c49, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843673403491521530, guid: 070a2db91cf27fd4a85638d4181a0c49, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843673403491521530, guid: 070a2db91cf27fd4a85638d4181a0c49, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843673403491521530, guid: 070a2db91cf27fd4a85638d4181a0c49, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843673403491521530, guid: 070a2db91cf27fd4a85638d4181a0c49, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843673403491521530, guid: 070a2db91cf27fd4a85638d4181a0c49, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843673403491521530, guid: 070a2db91cf27fd4a85638d4181a0c49, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843673403491521530, guid: 070a2db91cf27fd4a85638d4181a0c49, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6843673403491521530, guid: 070a2db91cf27fd4a85638d4181a0c49,
-        type: 3}
+    - target: {fileID: 6843673403491521530, guid: 070a2db91cf27fd4a85638d4181a0c49, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6843673403491521530, guid: 070a2db91cf27fd4a85638d4181a0c49,
-        type: 3}
+    - target: {fileID: 6843673403491521530, guid: 070a2db91cf27fd4a85638d4181a0c49, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6843673403491521532, guid: 070a2db91cf27fd4a85638d4181a0c49,
-        type: 3}
+    - target: {fileID: 6843673403491521532, guid: 070a2db91cf27fd4a85638d4181a0c49, type: 3}
       propertyPath: m_Name
       value: KinectController
       objectReference: {fileID: 0}
-    - target: {fileID: 6843673403491521533, guid: 070a2db91cf27fd4a85638d4181a0c49,
-        type: 3}
-      propertyPath: getInfraredFrames
+    - target: {fileID: 6843673403491521533, guid: 070a2db91cf27fd4a85638d4181a0c49, type: 3}
+      propertyPath: getDepthFrames
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6843673403491521533, guid: 070a2db91cf27fd4a85638d4181a0c49,
-        type: 3}
-      propertyPath: getDepthFrames
+    - target: {fileID: 6843673403491521533, guid: 070a2db91cf27fd4a85638d4181a0c49, type: 3}
+      propertyPath: getInfraredFrames
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 070a2db91cf27fd4a85638d4181a0c49, type: 3}
+--- !u!114 &1835003807 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6843673401472626457, guid: 070a2db91cf27fd4a85638d4181a0c49, type: 3}
+  m_PrefabInstance: {fileID: 1835003806}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8f864d895d4d9c4cb2a9b96bb86c08b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

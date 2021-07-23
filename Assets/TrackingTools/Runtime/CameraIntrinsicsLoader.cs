@@ -1,5 +1,5 @@
 ﻿/*
-	Copyright © Carl Emil Carlsen 2020
+	Copyright © Carl Emil Carlsen 2020-2021
 	http://cec.dk
 */
 
@@ -12,8 +12,13 @@ namespace TrackingTools
 	{
 		[SerializeField] string _intrinsicsFileName = "DefaultCamera";
 
+		public string intrinsicsFileName {
+			get { return _intrinsicsFileName; }
+			set { _intrinsicsFileName = value; }
+		}
 
-		void Awake()
+
+		void Start()
 		{
 			Intrinsics intrinsics;
 			if( !Intrinsics.TryLoadFromFile( _intrinsicsFileName, out intrinsics ) ) return;

@@ -53,13 +53,36 @@ MonoBehaviour:
   pointCloudColorTexture: {fileID: 0}
   pointCloudPlayerList: 
   frameSourceFlags: 0
+  depth2colorCamMat:
+    e00: 1
+    e01: 0
+    e02: 0
+    e03: 0
+    e10: 0
+    e11: 1
+    e12: 0
+    e13: 0
+    e20: 0
+    e21: 0
+    e22: 1
+    e23: 0
+    e30: 0
+    e31: 0
+    e32: 0
+    e33: 1
   sensorRotValueY: 0
-  colorCameraMode: 2
-  depthCameraMode: 2
+  _colorEnabled: 1
+  _infraredEnabled: 1
+  colorCameraMode: 1
+  depthCameraMode: 3
+  cameraFPS: 2
   deviceSyncMode: 0
   subDeviceDelayUsec: 0
+  bodyTemporalSmoothing: 0
   playbackPosSeconds: -1
   loopPlayback: 0
+  bodyTrackingSensorOrientation: 0
+  bodyTrackingProcessingMode: 2
   detectFloorForPoseEstimation: 1
 --- !u!1 &6843673402970588149
 GameObject:
@@ -77,7 +100,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6843673402970588146
 Transform:
   m_ObjectHideFlags: 0
@@ -114,6 +137,23 @@ MonoBehaviour:
   pointCloudColorTexture: {fileID: 0}
   pointCloudPlayerList: 
   frameSourceFlags: 0
+  depth2colorCamMat:
+    e00: 1
+    e01: 0
+    e02: 0
+    e03: 0
+    e10: 0
+    e11: 1
+    e12: 0
+    e13: 0
+    e20: 0
+    e21: 0
+    e22: 1
+    e23: 0
+    e30: 0
+    e31: 0
+    e32: 0
+    e33: 1
   sensorRotValueY: 0
   colorCameraMode: 35
   depthCameraMode: 35
@@ -133,7 +173,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6843673403391487547
 Transform:
   m_ObjectHideFlags: 0
@@ -170,6 +210,23 @@ MonoBehaviour:
   pointCloudColorTexture: {fileID: 0}
   pointCloudPlayerList: 
   frameSourceFlags: 0
+  depth2colorCamMat:
+    e00: 1
+    e01: 0
+    e02: 0
+    e03: 0
+    e10: 0
+    e11: 1
+    e12: 0
+    e13: 0
+    e20: 0
+    e21: 0
+    e22: 1
+    e23: 0
+    e30: 0
+    e31: 0
+    e32: 0
+    e33: 1
   sensorRotValueY: 0
   usersFaceBackwards: 0
 --- !u!1 &6843673403491521532
@@ -219,13 +276,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useMultiCamConfig: 0
+  syncMultiCamFrames: 0
   getDepthFrames: 1
-  getColorFrames: 2
+  getColorFrames: 0
   getInfraredFrames: 1
   getPoseFrames: 0
   getBodyFrames: 0
-  syncDepthAndColor: 1
-  syncBodyAndDepth: 1
+  syncDepthAndColor: 0
+  syncBodyAndDepth: 0
   minUserDistance: 0
   maxUserDistance: 0
   maxLeftRightDistance: 0
@@ -241,7 +299,7 @@ MonoBehaviour:
   displayImages: 02000000
   displayImageWidthPercent: 0.2
   statusInfoText: {fileID: 0}
-  consoleLogMessages: 1
+  consoleLogMessages: 0
   OnDepthSensorsStarted:
     m_PersistentCalls:
       m_Calls: []
