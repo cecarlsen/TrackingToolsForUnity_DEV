@@ -53,7 +53,7 @@ Find the extrinsics of a video projector (indirectly also finding the intrinsics
 ## TrackingTools.KinectAzure
 Depends on the above and [Azure Kinect Examples for Unity](https://assetstore.unity.com/packages/tools/integration/azure-kinect-examples-for-unity-149700) (sold on the Unity Asset Store).
 
-#### WebCameraTextureProvider  
+#### KinectAzureTexture2DProvider  
 Creates and forwards a IR and/or colour RenderTextures from the Kinect Azure.
 
 
