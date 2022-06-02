@@ -2,18 +2,20 @@
 
 A set of tools to make camera and video projector calibration slightly easier in Unity. This is useful for AR/XR and projection mapping setups. It contains two packages: *TrackingTools* and *TrackingTools.KinectAzure*.
 
-Using Unity 2020.3.
-
 ![CalibrationDance](https://raw.githubusercontent.com/cecarlsen/TrackingToolsForUnity/master/ReadmeImages/ProjectorCameraCalibration.jpg)
 
+#### Dependencies
+- Unity 2021.1 (it may work with other versions, but no promises)
+- [OpenCV for Unity](https://assetstore.unity.com/packages/tools/integration/opencv-for-unity-21088) (sold on the Asset Store). Tested with version 2.4.7.
+- [Optional] [Azure Kinect Examples for Unity](https://assetstore.unity.com/packages/tools/integration/azure-kinect-examples-for-unity-149700) (sold on the Unity Asset Store). If you want to use *TrackingTools.KinectAzure*.
 
 ## TrackingTools
-This package depends on [OpenCV for Unity](https://assetstore.unity.com/packages/tools/integration/opencv-for-unity-21088) (sold on the Asset Store) - so for anything to work you will need to buy it and include it in your project. The following components (MonoBehaviours) are available:
+MonoBehaviours:
 
 #### WebCameraTextureProvider
 Creates and forwards a Unity WebCamTexture.
 
-#### CameraIntrinsicsEstimator  
+#### CameraFromCheckerboardIntrinsicsEstimator  
 Finds the intrinsics (internal properties) of a camera using a physical calibration board and stores it in a json file at *StreamingAssets/TrackingTools/Intrinsics/FILE_NAME.json*.
 
 - Use a calibration board that corresponds to the resolution of your camera. Find boards at *TrackingTools/CalibrationBoards/*. See more about printing further down.
@@ -26,7 +28,10 @@ Finds the intrinsics (internal properties) of a camera using a physical calibrat
 #### CameraIntrinsicsLoader
 Loads intrinsics from json file located in the StreamingAssets folder and applies properties to a Unity camera (with the PhysicalCamera option enabled).
 
-#### CameraFromChessboardExtrinsicsEstimator
+#### CameraIntrinsicsSaver
+Saves intrinsics from a Unity camera to a json file located in the StreamingAssets.
+
+#### CameraFromCheckerboardExtrinsicsEstimator
 Find extrinsics (physical position and rotation) of a camera relative to calibration board and store it in a json file at *StreamingAssets/TrackingTools/Extrinsics/FILE_NAME.json*. Do use this, you first need to find the intrinsics of the camera (CameraIntrinsicsEstimator).
 
 #### CameraFromCircleAnchorExtrinsicsEstimator
@@ -51,7 +56,7 @@ Find the extrinsics of a video projector (indirectly also finding the intrinsics
 
 
 ## TrackingTools.KinectAzure
-Depends on the above and [Azure Kinect Examples for Unity](https://assetstore.unity.com/packages/tools/integration/azure-kinect-examples-for-unity-149700) (sold on the Unity Asset Store).
+MonoBehaviours:
 
 #### KinectAzureTexture2DProvider  
 Creates and forwards a IR and/or colour RenderTextures from the Kinect Azure.
