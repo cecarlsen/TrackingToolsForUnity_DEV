@@ -3,6 +3,7 @@
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
+		_Brightness ("Brightness", Float) = 1.0
 	}
 	SubShader
 	{
@@ -34,6 +35,7 @@
 
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
+			half _Brightness;
 
 
 			v2f Vert( appdata v )
@@ -47,7 +49,7 @@
 
 			fixed4 Frag( v2f i ) : SV_Target
 			{
-				return fixed4( tex2D( _MainTex, i.uv ).rrr, 1 ) * i.color;
+				return fixed4( tex2D( _MainTex, i.uv ).rrr * _Brightness, 1 ) * i.color;
 			}
 			ENDCG
 		}

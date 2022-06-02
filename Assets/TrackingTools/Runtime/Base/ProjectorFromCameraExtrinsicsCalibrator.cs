@@ -75,31 +75,22 @@ namespace TrackingTools
 		/// <summary>
 		/// Update the extrinsics of projector relative to camera.
 		/// </summary>
-		/// <param name="cameraIntrinsics"></param>
-		/// <param name="projectorIntrinsics"></param>
-		/// <param name="textureSize"></param>
 		public void Update( Intrinsics cameraIntrinsics, Intrinsics projectorIntrinsics, Size textureSize )
 		{
 			int w = (int) textureSize.width;
 			int h = (int) textureSize.height;
 
-			cameraIntrinsics.ToOpenCV( ref _cameraSensorMat, w, h );
-			projectorIntrinsics.ToOpenCV( ref _projectorSensorMat, w, h );
+			cameraIntrinsics.ApplyToToOpenCV( ref _cameraSensorMat );
+			projectorIntrinsics.ApplyToToOpenCV( ref _projectorSensorMat );
 
-			// In order to match OpenCV's pixel space (zero at top-left) and Unity's camera space (up is positive), we flip the sensor matrix.
-
+			// In order to match OpenCV's pixel space (zero at top-left) and Unity's camera space (up is positive), we flip the sensor matrix vertically.
 			_cameraSensorMat.WriteValue( - _cameraSensorMat.ReadValue( 1, 1 ), 1, 1 ); // fy
-			_cameraSensorMat.WriteValue( textureSize.height - _cameraSensorMat.ReadValue( 1, 2 ), 1, 2 ); // cy
 			_projectorSensorMat.WriteValue( - _projectorSensorMat.ReadValue( 1, 1 ), 1, 1 ); // fy
-			_projectorSensorMat.WriteValue( textureSize.height - _projectorSensorMat.ReadValue( 1, 2 ), 1, 2 ); // cy
 
+			// Set flags.
 			int flag = 0;
-			
-			// Don't recompute and change intrinsics parameters.
-			flag |= Calib3d.CALIB_FIX_INTRINSIC;
-			
-			// Don't recompute distortions, ignore them. We assume the incoming points have already bee undistorted.
-			flag |=
+			flag |= Calib3d.CALIB_FIX_INTRINSIC;	// Don't recompute and change intrinsics parameters.
+			flag |=									// Don't recompute distortions, ignore them. We assume the incoming points have already bee undistorted.
 				Calib3d.CALIB_FIX_TANGENT_DIST |
 				Calib3d.CALIB_FIX_K1 |
 				Calib3d.CALIB_FIX_K2 |
@@ -117,10 +108,10 @@ namespace TrackingTools
 				_rotation3x3Mat, _translationVecMat, _essentialMat, _fundamentalMat,
 				flag
 			);
-
+			
 			_extrinsics.UpdateFromOpenCvStereoCalibrate( _rotation3x3Mat, _translationVecMat );
 		}
-
+		
 
 		public void Clear()
 		{

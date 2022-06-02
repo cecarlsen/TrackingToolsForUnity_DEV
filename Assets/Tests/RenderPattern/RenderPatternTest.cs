@@ -11,7 +11,7 @@ public class RenderPatternTest : MonoBehaviour
 {
 	[SerializeField] Vector2Int _patternSize = new Vector2Int( 7, 11 );
 	[SerializeField] bool _forceValidPatternSize = true;
-	[SerializeField] TrackingToolsHelper.PatternType _patternType = TrackingToolsHelper.PatternType.Chessboard;
+	[SerializeField] TrackingToolsHelper.PatternType _patternType = TrackingToolsHelper.PatternType.Checkerboard;
 	[SerializeField] int _resolutionMax = 2014;
 	[SerializeField] bool _invert = false;
 	[SerializeField] float _border = 1;

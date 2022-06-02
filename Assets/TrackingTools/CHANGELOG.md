@@ -1,25 +1,14 @@
-##0.1.3 (2021/07/23)
-
-**CHANGES**
-
- - Included OpenCvKalmanFilter3D.
-
-
-##0.1.2 (2021/06/29)
-
-**CHANGES**
-
- - Added load event options to ExtrinsicsLoader.
-
-##0.1.1 (2021/06/03)
-
-**CHANGES**
-
- - Added CameraLensUndistorterGpu (only supporting radial distortion).
+0.1.0 - 2020/06/01
+-----
+- Fixed camera intrinsics being applied without vertical flip.
+- Added CameraIntrinsicsSaver.
+- Integrated Checkerboard and ProjectorCheckerboard ScriptableObject.
+- Tested with OpenCVForUnity 2.4.7 and Unity 2020.3.33.
+- Added MultiDisplayFullscreenStarter.
+- Fixed missing materials issue in builds.
+- Rearranged file structure.
 
 
-##0.1.0 (2021/04/21)
-
-**CHANGES**
-
- - Initial public version. Original code developed in 2020.
+0.0.1
+-----
+- First change-logged version.

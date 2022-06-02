@@ -7,6 +7,7 @@
 	Image space is measured in pixels and "real space" is measured in millimeters.
 */
 
+using UnityEngine;
 using System.Collections.Generic;
 using OpenCVForUnity.CoreModule;
 using OpenCVForUnity.Calib3dModule;
@@ -68,7 +69,7 @@ namespace TrackingTools
 		}
 
 
-		public void UpdateIntrinsics( bool samplesHaveDistortion = true, bool useTextureAspect = false, bool flipVerticalLensShift = false )
+		public void UpdateIntrinsics( bool samplesHaveDistortion = true, bool useTextureAspect = false )
 		{
 			int flags = 0;
 
@@ -86,12 +87,13 @@ namespace TrackingTools
 			// This is useful in case of projectors.
 			if( useTextureAspect ) flags |= Calib3d.CALIB_FIX_ASPECT_RATIO;
 
-			// Compute intrinsics.
-			// https://forum.unity.com/threads/released-opencv-for-unity.277080/page-8#post-2348856
-			// https://docs.opencv.org/4.5.2/d9/d0c/group__calib3d.html#ga3207604e4b1a1758aa66acb6ed5aa65d
-			_rmsError = (float) Calib3d.calibrateCamera( _patternRealSamples, _patternImageSamples, _textureSize, /*out*/ _sensorMat, /*out*/ _distortionCoeffsMat, /*out*/ _rotationSamples, /*out*/ _translationSamples, flags );
-
-			//Debug.Log( "New intrinsics matrix\n" + _sensorMat.dump() );
+			// Example: https://forum.unity.com/threads/released-opencv-for-unity.277080/page-8#post-2348856
+			TermCriteria terminationCriteria = new TermCriteria( TermCriteria.EPS + TermCriteria.MAX_ITER, 60, 0.001 );
+			_rmsError = (float) Calib3d.calibrateCamera(
+				_patternRealSamples, _patternImageSamples, _textureSize,
+				_sensorMat, _distortionCoeffsMat, _rotationSamples, _translationSamples, // Out.
+				flags, terminationCriteria
+			);
 
 			// About RMS Error
 			// It's the average re-projection error. This number gives a good estimation of precision of the found parameters. 
@@ -102,11 +104,8 @@ namespace TrackingTools
 			// all the calibration images.
 			// https://docs.opencv.org/2.4/doc/tutorials/calib3d/camera_calibration/camera_calibration.html
 
-			// Flip vertical lens shift. It puzzels me why I need to do this for projectors and not cameras ... but it is needed.
-			if( flipVerticalLensShift ) _sensorMat.WriteValue( _textureSize.height - _sensorMat.ReadValue( 1, 2 ), 1, 2 ); // cy
-
 			// Update intrinsics object.
-			_intrinsics.UpdateFromOpenCV( _sensorMat, _distortionCoeffsMat, textureWidth, textureHeight, _rmsError );
+			_intrinsics.UpdateFromOpenCV( _sensorMat, _distortionCoeffsMat, new Vector2Int( textureWidth, textureHeight ), _rmsError );
 		}
 
 

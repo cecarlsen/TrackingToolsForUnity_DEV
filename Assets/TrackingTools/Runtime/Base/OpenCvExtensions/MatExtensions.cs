@@ -67,5 +67,24 @@ namespace TrackingTools
 			vectorMat.WriteValue( vector.z, 2, 0 );
 		}
 
+
+		/// <summary>
+		/// Alternaive to Mat.dump().
+		/// </summary>
+		public static string ToStringDeep( this Mat mat )
+		{
+			System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+			for( int ny = 0; ny < mat.rows(); ny++ ){
+				sb.Append( "[ " );
+				for( int nx = 0; nx < mat.cols(); nx++ ){
+					if( nx > 0 ) sb.Append( ", " );
+					float value = (float) mat.ReadValue( ny, nx );
+					sb.Append( value.ToString( "F2" ) );
+				}
+				sb.Append( " ]\n" );
+			}
+			return sb.ToString();
+		}
 	}
 }

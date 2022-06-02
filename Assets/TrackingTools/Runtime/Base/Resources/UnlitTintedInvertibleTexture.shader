@@ -1,4 +1,4 @@
-﻿Shader "Unlit/TintedInvertibleTexture"
+﻿Shader "Hidden/UnlitTintedInvertibleTexture"
 {
 	Properties
 	{

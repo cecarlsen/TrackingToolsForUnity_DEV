@@ -1,5 +1,5 @@
 ﻿/*
-	Copyright © Carl Emil Carlsen 2020
+	Copyright © Carl Emil Carlsen 2020-2022
 	http://cec.dk
 */
 
@@ -28,7 +28,7 @@ namespace TrackingTools
 		[System.Serializable]
 		public enum PatternType
 		{
-			Chessboard,
+			Checkerboard,
 			CircleGrid,
 			AsymmetricCircleGrid
 		}
@@ -152,7 +152,7 @@ namespace TrackingTools
 		/// </summary>
 		/// <param name="patternSize">For chessbord, count the inner corners</param>
 		/// <param name="transform">The transform must be scaled to fit the aspect of the pattern</param>
-		/// <param name="patternType">OpenCv supported pattern type</param>
+		/// <param name="patternType">OpenCV supported pattern type</param>
 		/// <param name="patternPointsWorldSpace">Point collection</param>
 		public static void UpdateWorldSpacePatternPoints( Vector2Int patternSize, Matrix4x4 patternToWorldMatrix, PatternType patternType, Vector2 patternBorderSizeUV, ref MatOfPoint3f pointsWorldSpace )
 		{
@@ -184,40 +184,42 @@ namespace TrackingTools
 		}
 
 
-		public static bool FindChessboardCorners( Mat grayTexMat, Vector2Int innerCornerCount, ref MatOfPoint2f cornerPoints, bool fastAndImprecise = false )
+		public static bool FindChessboardCorners( Mat grayTexMat, Vector2Int innerCornerCount, ref MatOfPoint2f cornerPoints, bool fastAndImprecise = false, bool hasMarker = false )
 		{
 			Vector2IntToSize( innerCornerCount, ref _tempSize );
 			if( cornerPoints == null ) cornerPoints = new MatOfPoint2f();
 
-			if( !fastAndImprecise )
-			{
-				// TODO: Enable CALIB_CB_LARGER and CALIB_CB_MARKER when they are supported.
-				// https://forum.unity.com/threads/released-opencv-for-unity.277080/page-47#post-5665141
+			bool success;
+			//if( fastAndImprecise )
+			//{
+				//Just give me fast.
+				//const int flags = 
+				//	Calib3d.CALIB_CB_FAST_CHECK;// |
+					//Calib3d.CALIB_CB_NORMALIZE_IMAGE |
+					//Calib3d.CALIB_CB_FILTER_QUADS |
+					//Calib3d.CALIB_CB_ADAPTIVE_THRESH;
+				//success = Calib3d.findChessboardCorners( grayTexMat, _tempSize, cornerPoints, flags );
 
-				const int flagsSB =
-					Calib3d.CALIB_CB_EXHAUSTIVE;		// Run an exhaustive search to improve detection rate. (Note: this seems to have very positive impact).
-														//Calib3d.CALIB_CB_LARGER			// The detected pattern is allowed to be larger than patternSize
-														//Calib3d.CALIB_CB_MARKER			// The detected pattern must have a marker
-														//Calib3d.CALIB_CB_NORMALIZE_IMAGE	// Normalize the image gamma with equalizeHist before detection
+				// Because the old version prefers to start at black tile corner vs findChessboardCornersSB prefering to start
+				// at white tile corner, we have to reverse the order of points for the old version to match up.
+				//if( success ) ReverseOrder( cornerPoints );
 			
-				// findChessboardCornersSB() is supposed to work better than combined findChessboardCorners() and cornerSubPix().
-				return Calib3d.findChessboardCornersSB( grayTexMat, _tempSize, cornerPoints, flagsSB );
-
-			}
-
-			// Normally, you would use find4QuadCornersSubpix after findChessboardCorners to improve the result, but
-			// we just want fast.
-			const int flags = 
-				Calib3d.CALIB_CB_FAST_CHECK;// |
-				//Calib3d.CALIB_CB_NORMALIZE_IMAGE |
-				//Calib3d.CALIB_CB_FILTER_QUADS |
-				//Calib3d.CALIB_CB_ADAPTIVE_THRESH;
-			bool success = Calib3d.findChessboardCorners( grayTexMat, _tempSize, cornerPoints, flags );
-
-			// Because the old version prefers to start at black tile corner vs findChessboardCornersSB prefering to start
-			// at white tile corner, we have to reverse the order of points for the old version to match up.
-			if( success ) ReverseOrder( cornerPoints );
-
+			//} else {
+				// FindChessboardCornersSB() is supposed to work better than combined findChessboardCorners() and cornerSubPix().
+				int flagsSB = 0;
+				if( !fastAndImprecise ){
+					flagsSB |= Calib3d.CALIB_CB_EXHAUSTIVE; // Run an exhaustive search to improve detection rate. (Note: this seems to have very positive impact).
+					flagsSB |= Calib3d.CALIB_CB_ACCURACY; // Up sample input image to improve sub-pixel accuracy due to aliasing effects. This should be used if an accurate camera calibration is required.
+				}
+				if( hasMarker ){
+					flagsSB |= Calib3d.CALIB_CB_MARKER; // The detected pattern must have a marker
+					flagsSB |= Calib3d.CALIB_CB_LARGER; // The detected pattern is allowed to be larger than patternSize.
+				}
+				// Calib3d.CALIB_CB_NORMALIZE_IMAGE;	// Normalize the image gamma with equalizeHist before detection
+			
+				success = Calib3d.findChessboardCornersSB( grayTexMat, _tempSize, cornerPoints, flagsSB );
+			//}
+			
 			return success;
 		}
 
@@ -250,34 +252,23 @@ namespace TrackingTools
 		}
 
 
-		
-		public static Vector3 TranslationMatVectorToVector3( Mat translationVectorMat )
-		{
-			return - translationVectorMat.ReadVector3();
-		}
-
-
-		public static Quaternion RotationMatVectorToQuaternion( Mat rotationVectorMat ) // Could use OpenCVs Rodrigues for this as well.
-		{
-			Vector3 rotationVector = rotationVectorMat.ReadVector3();
-			return Quaternion.AngleAxis( rotationVector.magnitude * Mathf.Rad2Deg, -rotationVector );
-		}
-		
-
-
+		/*
 		public static void ApplyPose( Mat rotationVectorMat, Mat translationVectorMat, Transform transform, bool inverse = false )
 		{
 			Vector3 translation = translationVectorMat.ReadVector3();
 			Vector3 rotationVector = rotationVectorMat.ReadVector3();
+
 			if( inverse ){
 				translation *= -1;
 				rotationVector *= -1;
 			}
+
 			Quaternion rotation = Quaternion.AngleAxis( rotationVector.magnitude * Mathf.Rad2Deg, -rotationVector );
 			if( inverse ) translation = rotation * translation;
 
 			transform.SetPositionAndRotation( translation, rotation );
 		}
+		*/
 
 
 		/// <summary>
@@ -287,7 +278,7 @@ namespace TrackingTools
 		/// <returns>The corrected pattern size</returns>
 		public static Vector2Int GetClosestValidPatternSize( Vector2Int patternSize, PatternType patternType )
 		{
-			int patternSizeMin = patternType == PatternType.Chessboard ? 3 : 2;
+			int patternSizeMin = patternType == PatternType.Checkerboard ? 3 : 2;
 
 			if( patternSize.x < 3 ) patternSize.x = patternSizeMin;
 			if( patternSize.y < 3 ) patternSize.y = patternSizeMin;
@@ -301,7 +292,7 @@ namespace TrackingTools
 					}
 					break;
 
-				case PatternType.Chessboard:
+				case PatternType.Checkerboard:
 					if( patternSize.x % 2 == 0 && patternSize.y % 2 == 0 ) {
 						if( patternSize.y == patternSizeMin ) patternSize.y++;
 						else patternSize.y--;
@@ -335,7 +326,7 @@ namespace TrackingTools
 		{
 			// Sanitize.
 			if( border < 0 ) border = 0;
-			int patternSizeMin = patternType == PatternType.Chessboard ? 3 : 2;
+			int patternSizeMin = patternType == PatternType.Checkerboard ? 3 : 2;
 			if( patternSize.x < patternSizeMin ) patternSize.x = patternSizeMin;
 			if( patternSize.y < patternSizeMin ) patternSize.y = patternSizeMin;
 
@@ -364,7 +355,7 @@ namespace TrackingTools
 				renderTexture.name = patternType.ToString();
 				renderTexture.wrapMode = TextureWrapMode.Repeat;
 			}
-			if( !material ) material = new Material( Shader.Find( "Unlit/Color" ) );
+			if( !material ) material = new Material( Shader.Find( "Hidden/UnlitColor" ) );
 
 			// Setup.
 			Graphics.SetRenderTarget( renderTexture );
@@ -377,7 +368,7 @@ namespace TrackingTools
 			material.SetPass( 0 );
 			switch( patternType )
 			{
-				case PatternType.Chessboard:
+				case PatternType.Checkerboard:
 				GL.Begin( GL.QUADS );
 				for( int ny = 0; ny < tileCount.y; ny++ ) {
 					float y = zero.y - ny * step.y;
@@ -435,7 +426,7 @@ namespace TrackingTools
 			precisionDotsContainerObject.transform.SetParent( calibrationBoardTransform );
 			Transform[] dotTransforms = new Transform[ 3 ];
 
-			Material dotMaterial = new Material( Shader.Find( "Unlit/Color" ) );
+			Material dotMaterial = new Material( Shader.Find( "Hidden/UnlitColor" ) );
 			for( int i = 0; i < dotTransforms.Length; i++ ) {
 				Transform dotTransform = GameObject.CreatePrimitive( PrimitiveType.Quad ).transform;
 				dotTransform.name = "Dot" + ( i + 1 );
