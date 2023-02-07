@@ -91,7 +91,7 @@ namespace TrackingTools
 		void Awake()
 		{
 			if( !Intrinsics.TryLoadFromFile( _intrinsicsFileName, out _intrinsics ) ) {
-				Debug.LogError( logPrepend + "Intrinsics file '" + _intrinsicsFileName + "' not found.\n" );
+				Debug.LogError( logPrepend + "Loadind intrinsics file '" + _intrinsicsFileName + "' failed.\n" );
 				enabled = false;
 				return;
 			}

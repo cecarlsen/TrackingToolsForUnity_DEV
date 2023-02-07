@@ -157,7 +157,7 @@ MonoBehaviour:
     resolution: {x: 1920, y: 1080}
     frequency: 60
   _additionalDisplayResolutionRequests:
-  - resolution: {x: 1920, y: 1080}
+  - resolution: {x: 1280, y: 800}
     frequency: 60
 --- !u!4 &292913896
 Transform:
@@ -169,6 +169,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -214,7 +215,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a3cb19cb3ce5db4387ca06bebeabea9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _requestedDeviceIndex: 1
+  _requestedDeviceIndex: 4
   _requestedWidth: 1280
   _requestedHeight: 720
   _requestedFrameRate: 30
@@ -248,6 +249,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
@@ -334,6 +336,11 @@ PrefabInstance:
       propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3107280398424318744, guid: f08f3e3e896a9ea45af4ae873392519b,
+        type: 3}
+      propertyPath: m_projectionMatrixMode
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3107280398644160888, guid: f08f3e3e896a9ea45af4ae873392519b,
         type: 3}
       propertyPath: _operationMode
@@ -341,14 +348,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3107280398644160888, guid: f08f3e3e896a9ea45af4ae873392519b,
         type: 3}
+      propertyPath: _showDotGizmos
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3107280398644160888, guid: f08f3e3e896a9ea45af4ae873392519b,
+        type: 3}
       propertyPath: _projectorCheckerboard
       value: 
-      objectReference: {fileID: 11400000, guid: a3ba531deace30d4c90d27e7ad32132d,
+      objectReference: {fileID: 11400000, guid: 4cade37c5e824f34e89ed527f484aa00,
         type: 2}
     - target: {fileID: 3107280398644160888, guid: f08f3e3e896a9ea45af4ae873392519b,
         type: 3}
       propertyPath: _cameraIntrinsicsFileName
-      value: DefaultCamera_1280_270
+      value: KinectAzure_Color_1280_720_E-0,56
       objectReference: {fileID: 0}
     - target: {fileID: 3107280398644160888, guid: f08f3e3e896a9ea45af4ae873392519b,
         type: 3}
@@ -359,6 +371,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _projectorIntrinsicsFileName
       value: DefaultProjector
+      objectReference: {fileID: 0}
+    - target: {fileID: 3107280398644160888, guid: f08f3e3e896a9ea45af4ae873392519b,
+        type: 3}
+      propertyPath: _addErrorValueToIntrinsicsFileName
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3107280399379797304, guid: f08f3e3e896a9ea45af4ae873392519b,
         type: 3}

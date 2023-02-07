@@ -164,7 +164,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a3cb19cb3ce5db4387ca06bebeabea9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _requestedDeviceIndex: 0
+  _requestedDeviceIndex: 4
   _requestedWidth: 1280
   _requestedHeight: 720
   _requestedFrameRate: 30
@@ -198,6 +198,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -213,7 +214,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _checkerboard
       value: 
-      objectReference: {fileID: 11400000, guid: 8a730c21b187a674396f59d11e113280,
+      objectReference: {fileID: 11400000, guid: 6eedf21781e3dec409c0c7f8c925e708,
         type: 2}
     - target: {fileID: 1320722533865885984, guid: 3d99e0ea970c1c64ba6a6ed13a64ad6c,
         type: 3}
@@ -238,12 +239,12 @@ PrefabInstance:
     - target: {fileID: 1320722533865885984, guid: 3d99e0ea970c1c64ba6a6ed13a64ad6c,
         type: 3}
       propertyPath: _intrinsicsFileName
-      value: DefaultWebCamera_1280_270
+      value: KinectAzure_Color_1280_720
       objectReference: {fileID: 0}
     - target: {fileID: 1320722533865885984, guid: 3d99e0ea970c1c64ba6a6ed13a64ad6c,
         type: 3}
       propertyPath: _addErrorValueToFileName
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1320722533865885985, guid: 3d99e0ea970c1c64ba6a6ed13a64ad6c,
         type: 3}

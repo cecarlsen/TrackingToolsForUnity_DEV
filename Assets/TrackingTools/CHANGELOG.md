@@ -1,5 +1,11 @@
-0.1.0 - 2020/06/01
------
+## 0.1.1  (2023/02/XX)
+
+- Changed some components to use the 'fastAndImprecise' parameter in TrackingToolsHelper.FindChessboardCorners when possible.
+- Fixed issues in ProjectorFromCameraExtrinsicsEstimator that produced wrong results when camera and projector had different aspect ratios.
+
+
+## 0.1.0 (2020/06/01)
+
 - Fixed camera intrinsics being applied without vertical flip.
 - Added CameraIntrinsicsSaver.
 - Integrated Checkerboard and ProjectorCheckerboard ScriptableObject.
@@ -9,6 +15,7 @@
 - Rearranged file structure.
 
 
-0.0.1
------
+## 0.0.1 (0000/00/00)
+
 - First change-logged version.
+

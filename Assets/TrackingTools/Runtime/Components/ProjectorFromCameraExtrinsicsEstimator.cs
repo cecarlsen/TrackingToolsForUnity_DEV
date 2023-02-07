@@ -14,6 +14,7 @@
 	https://backend.orbit.dtu.dk/ws/portalfiles/portal/91373186/PhotonicsWest2014.pdf
 */
 
+using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
@@ -443,25 +444,48 @@ namespace TrackingTools
 
 		bool AdaptResources()
 		{
-			int w = _cameraSourceTexture.width;
-			int h = _cameraSourceTexture.height;
-			if( _processedCameraTexture != null && _processedCameraTexture.width == w && _processedCameraTexture.height == h ) return true;
-
+			int camWidth = _cameraSourceTexture.width;
+			int camHeight = _cameraSourceTexture.height;
+			if( _processedCameraTexture != null && _processedCameraTexture.width == camWidth && _processedCameraTexture.height == camHeight ) return true;
 
 			bool intrinsicsConversionSuccess = _cameraIntrinsics.ApplyToToOpenCV( ref _sensorMat, ref _distortionCoeffsMat );//, w, h );
 			if( !intrinsicsConversionSuccess ) return false;
 			_cameraIntrinsics.ApplyToUnityCamera( _mainCamera );
 
-			_projectorIntrinsicsCalibrator = new IntrinsicsCalibrator( w, h );
+			// Get resolution of projector.
+			int projWidth, projHeight;
+			int projectorTargetDisplayIndex = _projectorCamera.targetDisplay;
+			List<DisplayInfo> displayInfos = new List<DisplayInfo>();
+			Screen.GetDisplayLayout( displayInfos );
+			if( projectorTargetDisplayIndex < displayInfos.Count ) {
+				DisplayInfo projDisplay = displayInfos[ projectorTargetDisplayIndex ];
+				projWidth = projDisplay.width;
+				projHeight = projDisplay.height;
+			} else {
+				// Fallback.
+				projWidth = camWidth;
+				projHeight = camHeight;
+			}
 
-			_camTexGrayMat = new Mat( h, w, CvType.CV_8UC1 );
-			_camTexGrayUndistortMat = new Mat( h, w, CvType.CV_8UC1 );
-			_camTexGrayUndistortInvMat = new Mat( h, w, CvType.CV_8UC1 );
+			// Ensure that camera has right aspect.
+			float projectorAspect = projWidth / (float) projHeight;
+			_projectorCamera.usePhysicalProperties = true;
+			_projectorCamera.gateFit = Camera.GateFitMode.None;
+			_projectorCamera.orthographic = false;
+			_projectorCamera.sensorSize = new Vector2( _projectorCamera.sensorSize.y * projectorAspect, _projectorCamera.sensorSize.y );
 
-			_processedCameraTexture = new Texture2D( w, h, GraphicsFormat.R8_UNorm, 0, TextureCreationFlags.None );
+			// Create projector calibrator
+			_projectorIntrinsicsCalibrator = new IntrinsicsCalibrator( projWidth, projHeight );
+
+			// Create textures.
+			_camTexGrayMat = new Mat( camHeight, camWidth, CvType.CV_8UC1 );
+			_camTexGrayUndistortMat = new Mat( camHeight, camWidth, CvType.CV_8UC1 );
+			_camTexGrayUndistortInvMat = new Mat( camHeight, camWidth, CvType.CV_8UC1 );
+
+			_processedCameraTexture = new Texture2D( camWidth, camHeight, GraphicsFormat.R8_UNorm, 0, TextureCreationFlags.None );
 			_processedCameraTexture.name = "ProcessedCameraTex";
 
-			_arTexture = new RenderTexture( w, h, 16, GraphicsFormat.R8G8B8A8_UNorm );
+			_arTexture = new RenderTexture( camWidth, camHeight, 16, GraphicsFormat.R8G8B8A8_UNorm );
 			_arTexture.name = "AR Texture";
 
 			// Update circle pattern size.
@@ -476,7 +500,7 @@ namespace TrackingTools
 			// Update UI.
 			_processedCameraImage.texture = _processedCameraTexture;
 			_arImage.texture = _arTexture;
-			_cameraAspectFitter.aspectRatio = w / (float) h;
+			_cameraAspectFitter.aspectRatio = camWidth / (float) camHeight;
 			_mainCamera.targetTexture = _arTexture;
 
 			return true;
@@ -519,12 +543,11 @@ namespace TrackingTools
 
 		bool FindAndApplyChessPatternExtrinsics()
 		{
-			bool found = TrackingToolsHelper.FindChessboardCorners( _camTexGrayUndistortMat, _projectorCheckerboard.checkerPatternSize, ref _chessCornersImageMat );
+			bool found = TrackingToolsHelper.FindChessboardCorners( _camTexGrayUndistortMat, _projectorCheckerboard.checkerPatternSize, ref _chessCornersImageMat, fastAndImprecise: true );
 			if( found ) {
 				TrackingToolsHelper.DrawFoundPattern( _camTexGrayUndistortMat, _projectorCheckerboard.checkerPatternSize, _chessCornersImageMat );
-				_cameraExtrinsicsCalibrator.UpdateExtrinsics( _chessCornersWorldMat, _chessCornersImageMat, _cameraIntrinsics );//, _cameraTexture.width, _cameraTexture.height );
-				const bool transformBoard = true;
-				_cameraExtrinsicsCalibrator.extrinsics.ApplyToTransform( _calibrationBoardTransform, _mainCamera.transform, transformBoard );
+				_cameraExtrinsicsCalibrator.UpdateExtrinsics( _chessCornersWorldMat, _chessCornersImageMat, _cameraIntrinsics );
+				_cameraExtrinsicsCalibrator.extrinsics.ApplyToTransform( _calibrationBoardTransform, _mainCamera.transform, inverse: true ); // Transform board instead of camera.
 			}
 			_chessPatternTransform.gameObject.SetActive( found );
 			return found;
@@ -533,21 +556,16 @@ namespace TrackingTools
 
 		void UpdateCirclePatternInProjectorImage()
 		{
-			// We will be raycasting from the projector camera. In the editor, the aspect can change depending on the main game view, so we have to ensure that it matches.
-			_projectorCamera.targetTexture = _arTexture;
-
 			// Use the circle pattern transform from last update frame, because it is more likely that it will match the detected reality.
 			TrackingToolsHelper.UpdateWorldSpacePatternPoints( _circlePatternSize, _circlePatternToWorldPrevFrame, TrackingToolsHelper.PatternType.AsymmetricCircleGrid, _circlePatternBorderSizeUV, ref _circlePointsRenderedWorldMat );
 			for( int p = 0; p < _circlePatternPointCount; p++ ) {
 				Vector3 worldPoint = _circlePointsRenderedWorldMat.ReadVector3( p );
 				Vector3 viewportPoint = _projectorCamera.WorldToViewportPoint( worldPoint );
-				Vector2 imagePoint = new Vector2( viewportPoint.x * _cameraSourceTexture.width, ( 1 - viewportPoint.y ) * _cameraSourceTexture.height ); // Viewport space has zero at bottom-left, image space (opencv) has zero at top-left. So flip y.
+				Vector2 imagePoint = new Vector2( viewportPoint.x * _projectorIntrinsicsCalibrator.textureWidth, ( 1 - viewportPoint.y ) * _projectorIntrinsicsCalibrator.textureHeight ); // Viewport space has zero at bottom-left, image space (opencv) has zero at top-left. So flip y.
 				_circlePointsProjectorRenderImageMat.WriteVector2( imagePoint, p );
 			}
-			//TrackingToolsHelper.DrawFoundPattern( _camTexGrayUndistortMat, circlesPatternSize, _circlePointsProjectorRenderImageMat ); // Testing
 
-			// Reset render target.
-			_projectorCamera.targetTexture = null;
+			//TrackingToolsHelper.DrawFoundPattern( _camTexGrayUndistortMat, circlesPatternSize, _circlePointsProjectorRenderImageMat ); // Testing
 		}
 
 
@@ -575,7 +593,7 @@ namespace TrackingTools
 				Vector3 worldPoint = ray.origin + ray.direction * hitDistance;
 				_circlePointsDetectedWorldMat.WriteVector3( worldPoint, p );
 
-				// For intrinsics calibration (using calibrateCalmera()).
+				// For intrinsics calibration (using calibrateCamera()).
 				Vector3 realModelPoint = Quaternion.Inverse( _calibrationBoardTransform.rotation ) * ( worldPoint - _calibrationBoardTransform.position );
 				realModelPoint.z = 0; // Remove very small numbers. It seems CalibrateCamera() does not accept varying z values. I got an execption.
 				realModelPoint *= 1000; // To millimeters
@@ -663,7 +681,7 @@ namespace TrackingTools
 				Vector3 cornerPointPrev = _chessPatternToWorldPrevFrame.MultiplyPoint3x4( edgeCornersNormalized[ i ] );
 				averageMovement = Vector3.Distance( cornerPoint, cornerPointPrev );
 			}
-			return averageMovement / ( float) edgeCornersNormalized.Length; 
+			return averageMovement / (float) edgeCornersNormalized.Length; 
 		}
 
 
@@ -672,6 +690,7 @@ namespace TrackingTools
 		{
 			if( _state == State.Initiating || _state == State.BlindCalibration ) {
 				_circlePatternSize = defaultCirclesPatternSize;
+
 			} else {
 
 				const int circlePatternSizeYMin = 7;

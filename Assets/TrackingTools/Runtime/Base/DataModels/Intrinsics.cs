@@ -68,12 +68,16 @@ namespace TrackingTools
 		[SerializeField] double _rmsError;
 
 
+		public bool isValid => _distortionCoeffs != null; // If json deserialization failed _distortionCoeffs will be null.
+
+
 		public Vector2Int referenceResolution => _referenceResolution;
 
 		float imageAspect => _referenceResolution.x / (float) _referenceResolution.y;
 
 
 		static readonly string logPrepend = "<b>[" + nameof( Intrinsics ) + "]</b> ";
+		const int distortionCoeffCount = 5;
 
 
 
@@ -103,7 +107,14 @@ namespace TrackingTools
 				return false;
 			}
 
-			intrinsics = JsonUtility.FromJson<Intrinsics>( File.ReadAllText( filePath ) );
+			string jsonText = File.ReadAllText( filePath );
+			intrinsics = JsonUtility.FromJson<Intrinsics>( jsonText );
+
+			if( !intrinsics.isValid ) {
+				Debug.LogError( logPrepend + "Failed to load json text:\n" + jsonText );
+				return false;
+			}
+
 			return true;
 		}
 
@@ -139,8 +150,8 @@ namespace TrackingTools
 			if( cameraIntrinsicsMat == null || cameraIntrinsicsMat.IsDisposed || cameraIntrinsicsMat.rows() != 3 || cameraIntrinsicsMat.cols() != 3 ){
 				cameraIntrinsicsMat = Mat.eye( 3, 3, CvType.CV_64F );
 			}
-			if( distCoeffsMat == null || distCoeffsMat.IsDisposed || distCoeffsMat.total() != _distortionCoeffs.Length ) {
-				distCoeffsMat = new MatOfDouble( new Mat( 1, _distortionCoeffs.Length, CvType.CV_64F ) ); // This seems to be the only way to get distCoeffs.Length columns.
+			if( distCoeffsMat == null || distCoeffsMat.IsDisposed || distCoeffsMat.total() != distortionCoeffCount ) {
+				distCoeffsMat = new MatOfDouble( new Mat( 1, distortionCoeffCount, CvType.CV_64F ) ); // This seems to be the only way to get distCoeffs.Length columns.
 			}
 
 			ApplyToOpenCVCameraIntrinsicsMatrix( cameraIntrinsicsMat );
@@ -177,14 +188,14 @@ namespace TrackingTools
 
 			cam.gateFit = Camera.GateFitMode.None;
 
-			this._referenceResolution = new Vector2Int( cam.pixelWidth, cam.pixelHeight );
+			_referenceResolution = new Vector2Int( cam.pixelWidth, cam.pixelHeight );
 
 			_cx = ( -cam.lensShift.x + 0.5f ) * _referenceResolution.x;
 			_cy = (  cam.lensShift.y + 0.5f ) * _referenceResolution.y;
 			_fx = ( cam.focalLength / cam.sensorSize.x ) * _referenceResolution.x;
 			_fy = ( cam.focalLength / cam.sensorSize.y ) * _referenceResolution.y;
 
-			_distortionCoeffs = new double[ 5 ]; // No distortion.
+			_distortionCoeffs = new double[ distortionCoeffCount ]; // No distortion.
 
 			_rmsError = 0; // No error.
 		}
@@ -202,7 +213,7 @@ namespace TrackingTools
 			cam.usePhysicalProperties = true;
 			cam.gateFit = Camera.GateFitMode.None;
 
-			// Keep the current focal length. f can be arbitrary, as long as sensor size is resized to to make fx and fy consistient
+			// Keep the current focal length. F can be arbitrary, as long as sensor size is resized to to make fx and fy consistient
 			float focalLength = cam.focalLength;
 
 			cam.lensShift =  new Vector2(
@@ -216,7 +227,7 @@ namespace TrackingTools
 		}
 
 
-
+		/*
 		public void ToProjectionMatrix
 		(
 			float near, float far,
@@ -225,6 +236,7 @@ namespace TrackingTools
 		{
 
 		}
+		*/
 
 
 		void UpdateFromOpenCVCameraIntrinsicsMatrix( Mat cameraIntrinsicsMat )
@@ -256,6 +268,7 @@ namespace TrackingTools
 
 		public override string ToString()
 		{
+			if( !isValid ) return "Invalid";
 			return "(cx,cy,fx,fy): ( " + _cx + ", " + _cy + ", " + _fx + ", " + _fy + " ) dist: ( " + _distortionCoeffs[0] + ", " + _distortionCoeffs[ 1 ] + ", " + _distortionCoeffs[ 2 ] + ", " + _distortionCoeffs[ 3 ] + ", " + _distortionCoeffs[ 4 ] + " )";
 		}
 	}

@@ -5,9 +5,10 @@ A set of tools to make camera and video projector calibration slightly easier in
 ![CalibrationDance](https://raw.githubusercontent.com/cecarlsen/TrackingToolsForUnity/master/ReadmeImages/ProjectorCameraCalibration.jpg)
 
 #### Dependencies
-- Unity 2021.1 (it may work with other versions, but no promises)
-- [OpenCV for Unity](https://assetstore.unity.com/packages/tools/integration/opencv-for-unity-21088) (sold on the Asset Store). Tested with version 2.4.7.
-- [Optional] [Azure Kinect Examples for Unity](https://assetstore.unity.com/packages/tools/integration/azure-kinect-examples-for-unity-149700) (sold on the Unity Asset Store). If you want to use *TrackingTools.KinectAzure*.
+- Unity 2021.3 (it may work with other versions, but no promises)
+- [OpenCV for Unity](https://assetstore.unity.com/packages/tools/integration/opencv-for-unity-21088) (sold on the Asset Store). Tested with version 2.5.1.
+- [Optional] [Azure Kinect Examples for Unity](https://assetstore.unity.com/packages/tools/integration/azure-kinect-examples-for-unity-149700) (sold on the Unity Asset Store). If you want to use *TrackingTools.KinectAzure*. Tested with version 1.18.
+- [Optional] When working with the ProjectorFromCameraExtrinsicsEstimator it can be convenient to full-screen a game window from the editor. I use [Fullscreen Editor](https://assetstore.unity.com/packages/tools/utilities/fullscreen-editor-69534) for this.
 
 ## TrackingTools
 MonoBehaviours:

@@ -1,5 +1,5 @@
 ﻿/*
-	Copyright © Carl Emil Carlsen 2020-2022
+	Copyright © Carl Emil Carlsen 2020-2023
 	http://cec.dk
 
 	Guiding notes about calibration accurency.
@@ -22,8 +22,7 @@ namespace TrackingTools
 		[SerializeField] Checkerboard _checkerboard = null;
 		[SerializeField] int _desiredSampleCount = 4; // Four perfect samples should be ideal https://medium.com/@hey_duda/the-magic-behind-camera-calibration-8596b7ddcd71
 		[SerializeField] bool _flipSourceTextureVertically = false;
-		[SerializeField,Tooltip("Only use when you cannot control lighting conditions.")] bool _normalizeSourceTexture = false;
-
+		[SerializeField,Tooltip("Only use when you have bad lighting conditions.")] bool _normalizeSourceTexture = false;
 
 		[Header("Output")]
 		[SerializeField] string _intrinsicsFileName = "DefaultCamera_1280x720";
@@ -181,7 +180,7 @@ namespace TrackingTools
 
 			// Find chessboard.
 			Mat chessboardSourceMat = _state == State.Calibrating ? _camTexGrayMat : _camTexGrayUndistortMat;
-			bool foundBoard = TrackingToolsHelper.FindChessboardCorners( chessboardSourceMat, _checkerboard.checkerPatternSize, ref _chessCornersImageMat, fastAndImprecise: false, _checkerboard.hasMaker );
+			bool foundBoard = TrackingToolsHelper.FindChessboardCorners( chessboardSourceMat, _checkerboard.checkerPatternSize, ref _chessCornersImageMat, fastAndImprecise: true, _checkerboard.hasMaker );
 			if( foundBoard ) TrackingToolsHelper.DrawFoundPattern( chessboardSourceMat, _checkerboard.checkerPatternSize, _chessCornersImageMat );
 
 			// During calibration, undistort after.
@@ -224,6 +223,17 @@ namespace TrackingTools
 			// When consistently stable, gather sample.
 			if( _stableFrameCount == stableFrameCountThreshold )
 			{
+				// Find the calibration board again, this time with higher precision.
+				Mat chessboardSourceMat = _state == State.Calibrating ? _camTexGrayMat : _camTexGrayUndistortMat;
+				foundBoard = TrackingToolsHelper.FindChessboardCorners( chessboardSourceMat, _checkerboard.checkerPatternSize, ref _chessCornersImageMat, fastAndImprecise: false, _checkerboard.hasMaker );
+				if( !foundBoard ) {
+					// Abort.
+					_successFrameCount = 0;
+					_stableFrameCount = 0;
+					return;
+				}
+
+				// Add sample.
 				_intrinsicsCalibrator.AddSample( _chessCornersRealModelMat, _chessCornersImageMat );
 				_intrinsicsCalibrator.UpdateIntrinsics();
 				_previewFlasher.Start();
