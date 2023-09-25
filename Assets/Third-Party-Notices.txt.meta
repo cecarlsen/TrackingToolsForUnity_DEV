@@ -5,3 +5,10 @@ TextScriptImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 149700
+  packageName: Azure Kinect Examples for Unity
+  packageVersion: 1.19
+  assetPath: Assets/Third-Party-Notices.txt
+  uploadId: 611259

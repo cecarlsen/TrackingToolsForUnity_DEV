@@ -1,4 +1,4 @@
-## 0.1.1  (2023/02/XX)
+## 0.1.1  (2023/02/01)
 
 - Changed some components to use the 'fastAndImprecise' parameter in TrackingToolsHelper.FindChessboardCorners when possible.
 - Fixed issues in ProjectorFromCameraExtrinsicsEstimator that produced wrong results when camera and projector had different aspect ratios.
