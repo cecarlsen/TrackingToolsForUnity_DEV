@@ -32,6 +32,8 @@
     "com.unity.modules.video": "1.0.0",
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
-    "com.unity.modules.xr": "1.0.0"
+    "com.unity.modules.xr": "1.0.0",
+    "dk.cec.trackingtoolsforunity": "file:../../PackageRepos/dk.cec.trackingtoolsforunity",
+    "dk.cec.trackingtoolsforunity.azurekinect": "file:../../PackageRepos/dk.cec.trackingtoolsforunity.azurekinect"
   }
 }

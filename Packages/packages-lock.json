@@ -278,6 +278,18 @@
         "com.unity.modules.jsonserialize": "1.0.0",
         "com.unity.modules.subsystems": "1.0.0"
       }
+    },
+    "dk.cec.trackingtoolsforunity": {
+      "version": "file:../../PackageRepos/dk.cec.trackingtoolsforunity",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
+    "dk.cec.trackingtoolsforunity.azurekinect": {
+      "version": "file:../../PackageRepos/dk.cec.trackingtoolsforunity.azurekinect",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
     }
   }
 }
