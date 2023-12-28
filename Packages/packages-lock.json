@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.unity.ai.navigation": {
-      "version": "1.1.4",
+      "version": "2.0.0",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -10,14 +10,14 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ext.nunit": {
-      "version": "2.0.3",
+      "version": "2.0.5",
       "depth": 2,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
-      "version": "2.0.18",
+      "version": "2.0.22",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -33,7 +33,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.test-framework": {
-      "version": "1.3.7",
+      "version": "1.3.9",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -44,13 +44,41 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ugui": {
-      "version": "1.0.0",
+      "version": "2.0.0",
       "depth": 0,
       "source": "builtin",
       "dependencies": {
         "com.unity.modules.ui": "1.0.0",
         "com.unity.modules.imgui": "1.0.0"
       }
+    },
+    "dk.cec.trackingtoolsforunity": {
+      "version": "file:../../PackageRepos/dk.cec.trackingtoolsforunity",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
+    "dk.cec.trackingtoolsforunity.azurekinect": {
+      "version": "file:../../PackageRepos/dk.cec.trackingtoolsforunity.azurekinect",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "dk.cec.trackingtoolsforunity": ""
+      }
+    },
+    "dk.cec.trackingtoolsforunity.ximea": {
+      "version": "file:../../PackageRepos/dk.cec.trackingtoolsforunity.ximea",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "dk.cec.trackingtoolsforunity": ""
+      }
+    },
+    "com.unity.modules.accessibility": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {}
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",
@@ -90,6 +118,12 @@
         "com.unity.modules.audio": "1.0.0",
         "com.unity.modules.animation": "1.0.0"
       }
+    },
+    "com.unity.modules.hierarchycore": {
+      "version": "1.0.0",
+      "depth": 1,
+      "source": "builtin",
+      "dependencies": {}
     },
     "com.unity.modules.imageconversion": {
       "version": "1.0.0",
@@ -179,7 +213,8 @@
       "dependencies": {
         "com.unity.modules.ui": "1.0.0",
         "com.unity.modules.imgui": "1.0.0",
-        "com.unity.modules.jsonserialize": "1.0.0"
+        "com.unity.modules.jsonserialize": "1.0.0",
+        "com.unity.modules.hierarchycore": "1.0.0"
       }
     },
     "com.unity.modules.umbra": {
@@ -278,18 +313,6 @@
         "com.unity.modules.jsonserialize": "1.0.0",
         "com.unity.modules.subsystems": "1.0.0"
       }
-    },
-    "dk.cec.trackingtoolsforunity": {
-      "version": "file:../../PackageRepos/dk.cec.trackingtoolsforunity",
-      "depth": 0,
-      "source": "local",
-      "dependencies": {}
-    },
-    "dk.cec.trackingtoolsforunity.azurekinect": {
-      "version": "file:../../PackageRepos/dk.cec.trackingtoolsforunity.azurekinect",
-      "depth": 0,
-      "source": "local",
-      "dependencies": {}
     }
   }
 }
