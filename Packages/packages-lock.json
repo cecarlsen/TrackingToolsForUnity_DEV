@@ -66,6 +66,16 @@
         "dk.cec.trackingtoolsforunity": ""
       }
     },
+    "dk.cec.trackingtoolsforunity.depthaccelerator": {
+      "version": "file:E:/cec/Repos/TrackingToolsForUnity_DEV/PackageRepos/dk.cec.trackingtoolsforunity.depthaccelerator",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "dk.cec.trackingtoolsforunity": "",
+        "dk.cec.trackingtoolsforunity.azurekinect": "",
+        "dk.cec.trackingtoolsforunity.ximea": ""
+      }
+    },
     "dk.cec.trackingtoolsforunity.ximea": {
       "version": "file:../../PackageRepos/dk.cec.trackingtoolsforunity.ximea",
       "depth": 0,
